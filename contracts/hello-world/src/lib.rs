@@ -73,6 +73,13 @@ impl Contract {
                 .unwrap_or(false)
         }).map(|(_, data)| data.clone())
     }
+
+
+   //funcione4s del docente 
+   
+   
 }
 
 mod test;
+
+
