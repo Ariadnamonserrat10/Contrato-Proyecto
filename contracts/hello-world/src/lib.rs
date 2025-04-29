@@ -5,9 +5,9 @@
 // #[contract]
 // pub struct Contract;
 
-<<<<<<< HEAD
-#[contractimpl]
-impl Contract {
+
+// #[contractimpl]
+// impl Contract {
     // pub fn insert_estudiante(env: Env, id: String, nombre: String, email: String) {
     //     let mut estudiantes: Map<String, Map<Symbol, String>> = env
     //         .storage()
@@ -163,14 +163,7 @@ impl Contract {
 //     }
 // }
    
-}
-
-mod test;
-
-
-=======
-// #[contractimpl]
-// impl Contract {
+    // Estudiantes
 //     // pub fn insert_estudiante(env: Env, id: String, nombre: String, email: String) {
 //     //     let mut estudiantes: Map<String, Map<Symbol, String>> = env
 //     //         .storage()
@@ -371,4 +364,3 @@ mod test;
 
 
 // mod test;
->>>>>>> 2d5ee31760d78f180066bf4018b6ab05477e0059
