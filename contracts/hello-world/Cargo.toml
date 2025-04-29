@@ -9,11 +9,7 @@ crate-type = ["lib", "cdylib"]
 doctest = false
 
 [dependencies]
-soroban-sdk = { version = "0.9", features = ["soroban-env-macros/wasm"] }
+soroban-sdk = { workspace = true }
 
 [dev-dependencies]
-soroban-sdk = { version = "0.9", features = ["soroban-env-macros/wasm", "testutils"] }
-
-[features]
-default = []
-soroban-env-macros/wasm = ["soroban-sdk"]
+soroban-sdk = { workspace = true, features = ["testutils"] }
