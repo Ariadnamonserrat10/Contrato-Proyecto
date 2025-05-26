@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Academy - Panel de Usuario</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@500&display=swap" rel="stylesheet">
+  <style>
+    .nav-link {
+      transition: color 0.3s ease, transform 0.3s ease;
+    }
+    .nav-link:hover {
+      color: #3b82f6; /* Color azul */
+      transform: scale(1.1);
+    }
+    .card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-r from-blue-400 to-blue-600 text-white">
+
+  <header class="bg-blue-700 text-white p-4 shadow-lg">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
+      <h1 class="text-3xl font-bold font-Montserrat">Academy</h1>
+      <nav class="space-x-6">
+        <a href="#" class="nav-link">Inicio</a>
+        <a href="#" class="nav-link">Cursos</a>
+        <a href="#" class="nav-link">Niveles</a>
+        <a href="#" class="nav-link">Materias</a>
+        <a href="#" class="nav-link">Certificados</a>
+        <a href="#" class="nav-link">Billetera</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto p-6">
+    <h2 class="text-4xl font-bold mb-4">Bienvenido a Academy</h2>
+    <p class="text-lg mb-6">Aquí puedes acceder a tus cursos, niveles, materias y certificados.</p>
+    
+    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="card bg-white text-gray-800 p-4 rounded-lg shadow-lg">
+        <h3 class="text-2xl font-semibold mb-2">Cursos</h3>
+        <p>Accede a tus cursos en la sección de Cursos.</p>
+      </div>
+      <div class="card bg-white text-gray-800 p-4 rounded-lg shadow-lg">
+        <h3 class="text-2xl font-semibold mb-2">Niveles</h3>
+        <p>Consulta tus niveles de progreso.</p>
+      </div>
+      <div class="card bg-white text-gray-800 p-4 rounded-lg shadow-lg">
+        <h3 class="text-2xl font-semibold mb-2">Materias</h3>
+        <p>Revisa las materias disponibles.</p>
+      </div>
+      <div class="card bg-white text-gray-800 p-4 rounded-lg shadow-lg">
+        <h3 class="text-2xl font-semibold mb-2">Certificados</h3>
+        <p>Descarga tus certificados.</p>
+      </div>
+      <div class="card bg-white text-gray-800 p-4 rounded-lg shadow-lg">
+        <h3 class="text-2xl font-semibold mb-2">Billetera</h3>
+        <p>Gestiona tu billetera para pagos y transacciones.</p>
+      </div>
+    </div>
+  </main>
+
+</body>
+</html>
