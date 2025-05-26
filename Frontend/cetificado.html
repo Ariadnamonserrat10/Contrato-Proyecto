@@ -459,7 +459,7 @@
     <div class="bg-particles"></div>
     
     <header>
-        <h1>Cursos</h1>
+        <h1>Certificados</h1>
         <nav>
             <a href="Inicio.html">🏠 Inicio</a>
             <a href="cursos.html" class="active">📚 Cursos</a>
@@ -473,7 +473,7 @@
 
     <section class="search-section">
         <div class="search-container">
-            <h2 class="search-title">🔍 Encuentra tu Curso Perfecto</h2>
+            <h2 class="search-title">🔍 Buscar Certificado</h2>
             <p class="search-subtitle">Explora nuestra amplia selección de cursos especializados</p>
             <input type="text" class="search-input" placeholder="Buscar por título, tecnología o tema..." id="search-input" />
         </div>
@@ -532,22 +532,6 @@
                 image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=80", 
                 rating: 3.9,
                 category: "Marketing"
-            },
-            { 
-                id: 7, 
-                title: "Programación en Java Avanzado", 
-                description: "Aprende conceptos avanzados de Java para desarrollar aplicaciones complejas. Spring Framework, microservicios y arquitectura.", 
-                image: "https://images.unsplash.com/photo-1517433456452-f9633a875f6f?auto=format&fit=crop&w=600&q=80", 
-                rating: 2.5,
-                category: "Backend"
-            },
-            { 
-                id: 8, 
-                title: "Blockchain y Criptomonedas", 
-                description: "Entiende la tecnología blockchain y cómo funcionan las criptomonedas hoy en día. Smart contracts y DeFi.", 
-                image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=600&q=80", 
-                rating: 4.9,
-                category: "Blockchain"
             }
         ];
 
@@ -628,7 +612,7 @@
                 noResults.className = "no-results";
                 noResults.innerHTML = `
                     <div class="no-results-icon">🔍</div>
-                    <h3>No se encontraron cursos</h3>
+                    <h3>No se encontraron certificados</h3>
                     <p>Intenta con otros términos de búsqueda</p>
                 `;
                 container.appendChild(noResults);
@@ -683,12 +667,12 @@
                 // Button
                 const btn = document.createElement("button");
                 btn.className = "course-button";
-                btn.innerHTML = `✨ Adquirir Curso`;
+                btn.innerHTML = `✨ Adquirir Certificado`;
                 btn.addEventListener("click", () => {
                     btn.innerHTML = `<div class="loading"></div> Procesando...`;
                     setTimeout(() => {
                         alert(`¡Felicidades! Has adquirido: ${course.title}`);
-                        btn.innerHTML = `✅ Curso Adquirido`;
+                        btn.innerHTML = `✅ Adquirido`;
                         btn.style.background = 'var(--soft-gradient)';
                         btn.style.color = 'var(--text-primary)';
                     }, 1500);
