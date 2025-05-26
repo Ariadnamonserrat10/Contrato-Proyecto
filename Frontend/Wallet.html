@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Stellar Wallet</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+  body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+    box-sizing: border-box;
+  }
+  header {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    letter-spacing: 2px;
+    text-shadow: 1px 1px 6px rgba(0,0,0,0.3);
+  }
+  .wallet-container {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    width: 100%;
+    max-width: 400px;
+    backdrop-filter: blur(8px);
+  }
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+  input[type="password"], input[type="text"], input[type="number"] {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 1rem;
+    box-sizing: border-box;
+  }
+  button {
+    background-color: #2563eb;
+    border: none;
+    border-radius: 10px;
+    padding: 0.75rem 1.25rem;
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+    margin-bottom: 1rem;
+    width: 100%;
+  }
+  button:hover {
+    background-color: #1e40af;
+  }
+  .info {
+    background: rgba(0,0,0,0.2);
+    padding: 1rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    word-break: break-word;
+    margin-bottom: 1rem;
+  }
+  .hidden {
+    display: none;
+  }
+  .send-section {
+    margin-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    padding-top: 1rem;
+  }
+  .error {
+    color: #f87171;
+    margin-bottom: 1rem;
+  }
+  .success {
+    color: #4ade80;
+    margin-bottom: 1rem;
+  }
+  footer {
+    margin-top: auto;
+    font-size: 0.875rem;
+    opacity: 0.7;
+  }
+  a {
+    color: #bbe6ff;
+    text-decoration: underline;
+  }
+</style>
+</head>
+<body>
+<header>
+        <h1>WALLET Stellar</h1>
+        <nav class="space-x-6">
+            <a href="Inicio.html" class="nav-link">Inicio</a>
+            <a href="cursos.html" class="nav-link">Cursos</a>
+            <a href="#" class="nav-link">Niveles</a>
+            <a href="#" class="nav-link">Materias</a>
+            <a href="#" class="nav-link">Certificados</a>
+            <a href="Wallet.html" class="nav-link">Wallet</a>
+            <a href="Moneda.html" class="nav-link">Moneda</a>
+        </nav>
+    </header>
+
+<div class="wallet-container" id="wallet-container">
+  <div id="login-section">
+    <label for="secret-key">Ingrese Su Clave Secreta De Stellar</label>
+    <input type="password" id="secret-key" placeholder="clave Secreta (S...)" autocomplete="off" />
+    <button id="connect-wallet-btn">Connect Wallet</button>
+
+<script>
+  document.getElementById('connect-wallet-btn').addEventListener('click', function() {
+    window.location.href = 'moneda.html';  // Cambia esta URL a la que quieras
+  });
+</script>
+
+    <div id="login-error" class="error hidden"></div>
+  </div>
+
+  <div id="wallet-section" class="hidden">
+    <div>
+      <strong>Public Key:</strong>
+      <div class="info" id="public-key"></div>
+    </div>
+    <div>
+      <strong>Balance:</strong>
+      <div class="info" id="balance">Loading...</div>
+    </div>
+    <button id="refresh-balance-btn">Refresh Balance</button>
+
+    <div class="send-section">
+      <h3>Send Lumens (XLM)</h3>
+      <label for="destination">Destination Account Public Key</label>
+      <input type="text" id="destination" placeholder="G..." />
+      <label for="amount">Amount (XLM)</label>
+      <input type="number" id="amount" placeholder="e.g. 10" min="0.000001" step="0.000001" />
+      <button id="send-btn">Send</button>
+      <div id="send-error" class="error hidden"></div>
+      <div id="send-success" class="success hidden"></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Built with the <a href="https://www.stellar.org/developers" target="_blank" rel="noopener">Stellar JavaScript SDK</a>. Use testnet keys only.
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stellar-sdk/10.8.0/stellar-sdk.min.js"></script>
+<script>
+  (() => {
+    const SecretKeyInput = document.getElementById('secret-key');
+    const ConnectWalletBtn = document.getElementById('connect-wallet-btn');
+    const LoginError = document.getElementById('login-error');
+
+    const WalletSection = document.getElementById('wallet-section');
+    const LoginSection = document.getElementById('login-section');
+
+    const PublicKeyDisplay = document.getElementById('public-key');
+    const BalanceDisplay = document.getElementById('balance');
+    const RefreshBalanceBtn = document.getElementById('refresh-balance-btn');
+
+    const DestinationInput = document.getElementById('destination');
+    const AmountInput = document.getElementById('amount');
+    const SendBtn = document.getElementById('send-btn');
+    const SendError = document.getElementById('send-error');
+    const SendSuccess = document.getElementById('send-success');
+
+    const server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
+    StellarSdk.Networks.TESTNET;
+
+    let keypair = null;
+
+    function validateSecretKey(key) {
+      try {
+        const kp = StellarSdk.Keypair.fromSecret(key);
+        return kp;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function loadAccountBalance(publicKey) {
+      try {
+        const account = await server.loadAccount(publicKey);
+        // Find native XLM balance
+        const nativeBalance = account.balances.find(b => b.asset_type === 'native');
+        let balanceText = nativeBalance ? `${nativeBalance.balance} XLM` : '0 XLM'; // Corregido aquí
+        BalanceDisplay.textContent = balanceText;
+      } catch (err) {
+        BalanceDisplay.textContent = 'Account not found or not funded.';
+      }
+    }
+
+    ConnectWalletBtn.addEventListener('click', async () => {
+      const secret = SecretKeyInput.value.trim();
+      LoginError.classList.add('hidden');
+      SendError.classList.add('hidden');
+      SendSuccess.classList.add('hidden');
+
+      const validKeypair = validateSecretKey(secret);
+      if (!validKeypair) {
+        LoginError.textContent = 'Invalid Stellar secret key.';
+        LoginError.classList.remove('hidden');
+        return;
+      }
+
+      keypair = validKeypair;
+      PublicKeyDisplay.textContent = keypair.publicKey();
+      LoginSection.classList.add('hidden');
+      WalletSection.classList.remove('hidden');
+
+      BalanceDisplay.textContent = 'Loading...';
+      await loadAccountBalance(keypair.publicKey());
+    });
+
+    RefreshBalanceBtn.addEventListener('click', async () => {
+      if (!keypair) return;
+      BalanceDisplay.textContent = 'Loading...';
+      await loadAccountBalance(keypair.publicKey());
+    });
+
+    SendBtn.addEventListener('click', async () => {
+      SendError.classList.add('hidden');
+      SendSuccess.classList.add('hidden');
+
+      if (!keypair) {
+        SendError.textContent = 'Connect your wallet first.';
+        SendError.classList.remove('hidden');
+        return;
+      }
+
+      const destination = DestinationInput.value.trim();
+      const amount = AmountInput.value.trim();
+
+      if (!StellarSdk.StrKey.isValidEd25519PublicKey(destination)) {
+        SendError.textContent = 'Invalid destination public key.';
+        SendError.classList.remove('hidden');
+        return;
+      }
+      if (isNaN(amount) || Number(amount) <= 0) {
+        SendError.textContent = 'Please enter a valid amount greater than 0.';
+        SendError.classList.remove('hidden');
+        return;
+      }
+
+      SendBtn.disabled = true;
+      SendBtn.textContent = 'Sending...';
+
+      try {
+        const sourceKeypair = keypair;
+        const account = await server.loadAccount(sourceKeypair.publicKey());
+        const fee = await server.fetchBaseFee();
+
+        const transaction = new StellarSdk.TransactionBuilder(account, {
+          fee,
+          networkPassphrase: StellarSdk.Networks.TESTNET
+        })
+          .addOperation(StellarSdk.Operation.payment({
+            destination: destination,
+            asset: StellarSdk.Asset.native(),
+            amount: amount
+          }))
+          .setTimeout(30)
+          .build();
+
+        transaction.sign(sourceKeypair);
+
+        const result = await server.submitTransaction(transaction);
+
+        SendSuccess.textContent = `Payment successful! TX Hash: ${result.hash}`; // Corregido aquí
+        SendSuccess.classList.remove('hidden');
+
+        await loadAccountBalance(sourceKeypair.publicKey());
+      } catch (err) {
+        SendError.textContent = 'Transaction failed: ' + (err.response?.data?.extras?.result_codes?.transaction || err.message || err);
+        SendError.classList.remove('hidden');
+      } finally {
+        SendBtn.disabled = false;
+        SendBtn.textContent = 'Send';
+      }
+    });
+  })();
+</script>
+</body>
+</html>

@@ -1,169 +1,175 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@500&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
-<title>Cursos Disponibles</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@500&family=Poppins:wght@300;600&display=swap"
+    rel="stylesheet">
+  <title>Cursos Disponibles</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
 
-  :root {
-    --primary-color: #4f46e5;
-    --secondary-color: #6366f1;
-    --background-color: #f9fafb;
-    --card-bg: #ffffff;
-    --text-color: #1f2937;
-    --button-bg: #4f46e5;
-    --button-hover-bg: #4338ca;
-    --star-color: #fbbf24;
-    --star-bg: #e0e0e0;
-    --shadow: 0 4px 20px rgba(79, 70, 229, 0.15);
-  }
+    :root {
+      --primary-color: #4f46e5;
+      --secondary-color: #6366f1;
+      --background-color: #f9fafb;
+      --card-bg: #ffffff;
+      --text-color: #1f2937;
+      --button-bg: #4f46e5;
+      --button-hover-bg: #4338ca;
+      --star-color: #fbbf24;
+      --star-bg: #e0e0e0;
+      --shadow: 0 4px 20px rgba(79, 70, 229, 0.15);
+    }
 
-  * {
-    box-sizing: border-box;
-  }
-  .nav-link {
+    * {
+      box-sizing: border-box;
+    }
+
+    .nav-link {
       transition: color 0.3s ease, transform 0.3s ease;
     }
+
     .nav-link:hover {
-      color: #3b82f6; /* Color azul */
+      color: #3b82f6;
+      /* Color azul */
       transform: scale(1.1);
     }
 
-  body {
-    margin: 0;
-    font-family: 'Montserrat', sans-serif;
-    background-color: var(--background-color);
-    color: var(--text-color);
-  }
-
-  header {
-    padding: 2rem 1rem 1rem;
-    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-    color: white;
-    box-shadow: var(--shadow);
-  }
-
-  header h1 {
-    margin: 0;
-    font-weight: 700;
-    font-size: 2.5rem;
-  }
-
-  .search-container {
-    text-align: center;
-    margin: 2rem 0;
-  }
-
-  .search-input {
-    padding: 0.75rem;
-    font-size: 1rem;
-    width: 80%;
-    max-width: 400px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-  }
-
-  main {
-    max-width: 1200px;
-    margin: 2rem auto 4rem;
-    padding: 0 1rem;
-    display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
-    gap: 2rem;
-  }
-
-  .card {
-    background-color: var(--card-bg);
-    border-radius: 12px;
-    box-shadow: var(--shadow);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    transition: transform 0.3s ease;
-  }
-
-  .card:hover {
-    transform: translateY(-8px);
-  }
-
-  .card img {
-    width: 100%;
-    height: 160px;
-    object-fit: cover;
-  }
-
-  .card-content {
-    padding: 1rem 1.5rem 1.5rem;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .title {
-    font-weight: 700;
-    font-size: 1.25rem;
-    margin: 0.5rem 0 0.5rem;
-    flex-shrink: 0;
-  }
-
-  .description {
-    font-size: 0.9rem;
-    color: #4b5563;
-    flex-grow: 1;
-    line-height: 1.3;
-  }
-
-  .stars {
-    margin-bottom: 0.75rem;
-  }
-
-  .star {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    margin-right: 2px;
-    color: var(--star-bg);
-    stroke: none;
-    fill: var(--star-bg);
-    transition: fill 0.3s ease;
-  }
-
-  .star.filled {
-    fill: var(--star-color);
-  }
-
-  .btn-acquire {
-    background-color: var(--button-bg);
-    color: white;
-    border: none;
-    padding: 0.75rem;
-    font-weight: 600;
-    font-size: 1rem;
-    border-radius: 8px;
-    cursor: pointer;
-    box-shadow: 0 3px 8px rgba(79, 70, 229, 0.4);
-    transition: background-color 0.3s ease;
-    align-self: stretch;
-    margin-top: 1rem;
-  }
-
-  .btn-acquire:hover {
-    background-color: var(--button-hover-bg);
-  }
-
-  @media (max-width: 480px) {
-    header h1 {
-      font-size: 1.8rem;
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      background-color: var(--background-color);
+      color: var(--text-color);
     }
-  }
-</style>
+
+    header {
+      padding: 2rem 1rem 1rem;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      box-shadow: var(--shadow);
+    }
+
+    header h1 {
+      margin: 0;
+      font-weight: 700;
+      font-size: 2.5rem;
+    }
+
+    .search-container {
+      text-align: center;
+      margin: 2rem 0;
+    }
+
+    .search-input {
+      padding: 0.75rem;
+      font-size: 1rem;
+      width: 80%;
+      max-width: 400px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 2rem auto 4rem;
+      padding: 0 1rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+    }
+
+    .card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+    }
+
+    .card-content {
+      padding: 1rem 1.5rem 1.5rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .title {
+      font-weight: 700;
+      font-size: 1.25rem;
+      margin: 0.5rem 0 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .description {
+      font-size: 0.9rem;
+      color: #4b5563;
+      flex-grow: 1;
+      line-height: 1.3;
+    }
+
+    .stars {
+      margin-bottom: 0.75rem;
+    }
+
+    .star {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      margin-right: 2px;
+      color: var(--star-bg);
+      stroke: none;
+      fill: var(--star-bg);
+      transition: fill 0.3s ease;
+    }
+
+    .star.filled {
+      fill: var(--star-color);
+    }
+
+    .btn-acquire {
+      background-color: var(--button-bg);
+      color: white;
+      border: none;
+      padding: 0.75rem;
+      font-weight: 600;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(79, 70, 229, 0.4);
+      transition: background-color 0.3s ease;
+      align-self: stretch;
+      margin-top: 1rem;
+    }
+
+    .btn-acquire:hover {
+      background-color: var(--button-hover-bg);
+    }
+
+    @media (max-width: 480px) {
+      header h1 {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
 </head>
+
 <body>
-<header class="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-4 shadow-lg">
+  <header class="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-4 shadow-lg">
     <div class="max-w-6xl mx-auto flex justify-between items-center">
       <h1 class="text-3xl font-bold font-Montserrat">Academy</h1>
       <nav class="space-x-6">
@@ -172,145 +178,147 @@
         <a href="#" class="nav-link">Niveles</a>
         <a href="#" class="nav-link">Materias</a>
         <a href="#" class="nav-link">Certificados</a>
-        <a href="#" class="nav-link">Billetera</a>
+        <a href="Wallet.html" class="nav-link">Wallet</a>
+        <a href="Moneda.html" class="nav-link">Moneda</a>
       </nav>
     </div>
   </header>
-<div class="search-container">
-  <input type="text" class="search-input" placeholder="Buscar Curso..." id="search-input" />
-</div>
-<main id="courses-container">
-  <!-- Course cards will be injected here -->
-</main>
+  <div class="search-container">
+    <input type="text" class="search-input" placeholder="Buscar Curso..." id="search-input" />
+  </div>
+  <main id="courses-container">
+    <!-- Course cards will be injected here -->
+  </main>
 
-<script>
-  const courses = [
-    { id: 1, title: "Introducción a JavaScript", description: "Aprende los fundamentos de JavaScript desde cero, ideal para principiantes.", image: "https://images.unsplash.com/photo-1581091012184-5b6446cc1184?auto=format&fit=crop&w=600&q=80", rating: 3.5 },
-    { id: 2, title: "Desarrollo Web con React", description: "Construye interfaces de usuario dinámicas con React y sus principales herramientas.", image: "https://images.unsplash.com/photo-1505682634904-d7c74a0a7185?auto=format&fit=crop&w=600&q=80", rating: 5.0 },
-    { id: 3, title: "Python para Ciencia de Datos", description: "Descubre cómo usar Python y librerías populares para análisis y visualización de datos.", image: "https://images.unsplash.com/photo-1537432376769-00a0f1f6c34f?auto=format&fit=crop&w=600&q=80", rating: 4.2 },
-    { id: 4, title: "Introducción a Machine Learning", description: "Conceptos básicos y técnicas fundamentales para iniciarse en Machine Learning.", image: "https://images.unsplash.com/photo-1526378721188-66ddcb7f9564?auto=format&fit=crop&w=600&q=80", rating: 2.8 },
-    { id: 5, title: "Diseño UX/UI Moderno", description: "Aprende los principios del diseño de experiencia e interfaces para productos digitales.", image: "https://images.unsplash.com/photo-1542831371-d531d36971e6?auto=format&fit=crop&w=600&q=80", rating: 4.6 },
-    { id: 6, title: "Marketing Digital Estratégico", description: "Domina las técnicas más efectivas para promocionar productos y servicios en línea.", image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=80", rating: 3.9 },
-    { id: 7, title: "Programación en Java Avanzado", description: "Aprende conceptos avanzados de Java para desarrollar aplicaciones complejas.", image: "https://images.unsplash.com/photo-1517433456452-f9633a875f6f?auto=format&fit=crop&w=600&q=80", rating: 2.5 },
-    { id: 8, title: "Blockchain y Criptomonedas", description: "Entiende la tecnología blockchain y cómo funcionan las criptomonedas hoy en día.", image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=600&q=80", rating: 4.9 }
-  ];
+  <script>
+    const courses = [
+      { id: 1, title: "Introducción a JavaScript", description: "Aprende los fundamentos de JavaScript desde cero, ideal para principiantes.", image: "https://images.unsplash.com/photo-1581091012184-5b6446cc1184?auto=format&fit=crop&w=600&q=80", rating: 3.5 },
+      { id: 2, title: "Desarrollo Web con React", description: "Construye interfaces de usuario dinámicas con React y sus principales herramientas.", image: "https://images.unsplash.com/photo-1505682634904-d7c74a0a7185?auto=format&fit=crop&w=600&q=80", rating: 5.0 },
+      { id: 3, title: "Python para Ciencia de Datos", description: "Descubre cómo usar Python y librerías populares para análisis y visualización de datos.", image: "https://images.unsplash.com/photo-1537432376769-00a0f1f6c34f?auto=format&fit=crop&w=600&q=80", rating: 4.2 },
+      { id: 4, title: "Introducción a Machine Learning", description: "Conceptos básicos y técnicas fundamentales para iniciarse en Machine Learning.", image: "https://images.unsplash.com/photo-1526378721188-66ddcb7f9564?auto=format&fit=crop&w=600&q=80", rating: 2.8 },
+      { id: 5, title: "Diseño UX/UI Moderno", description: "Aprende los principios del diseño de experiencia e interfaces para productos digitales.", image: "https://images.unsplash.com/photo-1542831371-d531d36971e6?auto=format&fit=crop&w=600&q=80", rating: 4.6 },
+      { id: 6, title: "Marketing Digital Estratégico", description: "Domina las técnicas más efectivas para promocionar productos y servicios en línea.", image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=80", rating: 3.9 },
+      { id: 7, title: "Programación en Java Avanzado", description: "Aprende conceptos avanzados de Java para desarrollar aplicaciones complejas.", image: "https://images.unsplash.com/photo-1517433456452-f9633a875f6f?auto=format&fit=crop&w=600&q=80", rating: 2.5 },
+      { id: 8, title: "Blockchain y Criptomonedas", description: "Entiende la tecnología blockchain y cómo funcionan las criptomonedas hoy en día.", image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=600&q=80", rating: 4.9 }
+    ];
 
-  function createStarIcons(rating) {
-    const starsCount = 5;
-    const starElements = [];
-    const starPath = "M10 15l-5.09 3.42 1.95-5.85L2 9.59l5.92-.05 2.16-6.1 2.15 6.1 5.92.05-4.86 3.98 1.94 5.85z";
+    function createStarIcons(rating) {
+      const starsCount = 5;
+      const starElements = [];
+      const starPath = "M10 15l-5.09 3.42 1.95-5.85L2 9.59l5.92-.05 2.16-6.1 2.15 6.1 5.92.05-4.86 3.98 1.94 5.85z";
 
-    for (let i = 1; i <= starsCount; i++) {
-      const star = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-      star.setAttribute("viewBox", "0 0 20 20");
-      star.classList.add('star');
+      for (let i = 1; i <= starsCount; i++) {
+        const star = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        star.setAttribute("viewBox", "0 0 20 20");
+        star.classList.add('star');
 
-      if (i <= Math.floor(rating)) {
-        star.classList.add('filled');
-        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        path.setAttribute("fill", "currentColor");
-        path.setAttribute("d", starPath);
-        star.appendChild(path);
-      } else if (i === Math.ceil(rating) && rating % 1 !== 0) {
-        const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
-        const linearGradient = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
-        const gradId = `half-gradient-${rating.toString().replace('.', '-')}-${i}`;
-        linearGradient.setAttribute("id", gradId);
-        linearGradient.setAttribute("x1", "0%");
-        linearGradient.setAttribute("y1", "0%");
-        linearGradient.setAttribute("x2", "100%");
-        linearGradient.setAttribute("y2", "0%");
+        if (i <= Math.floor(rating)) {
+          star.classList.add('filled');
+          const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          path.setAttribute("fill", "currentColor");
+          path.setAttribute("d", starPath);
+          star.appendChild(path);
+        } else if (i === Math.ceil(rating) && rating % 1 !== 0) {
+          const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+          const linearGradient = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
+          const gradId = `half-gradient-${rating.toString().replace('.', '-')}-${i}`;
+          linearGradient.setAttribute("id", gradId);
+          linearGradient.setAttribute("x1", "0%");
+          linearGradient.setAttribute("y1", "0%");
+          linearGradient.setAttribute("x2", "100%");
+          linearGradient.setAttribute("y2", "0%");
 
-        const stop1 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
-        stop1.setAttribute("offset", "50%");
-        stop1.setAttribute("stop-color", "var(--star-color)");
-        stop1.setAttribute("stop-opacity", "1");
-        linearGradient.appendChild(stop1);
+          const stop1 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+          stop1.setAttribute("offset", "50%");
+          stop1.setAttribute("stop-color", "var(--star-color)");
+          stop1.setAttribute("stop-opacity", "1");
+          linearGradient.appendChild(stop1);
 
-        const stop2 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
-        stop2.setAttribute("offset", "50%");
-        stop2.setAttribute("stop-color", "var(--star-bg)");
-        stop2.setAttribute("stop-opacity", "1");
-        linearGradient.appendChild(stop2);
+          const stop2 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+          stop2.setAttribute("offset", "50%");
+          stop2.setAttribute("stop-color", "var(--star-bg)");
+          stop2.setAttribute("stop-opacity", "1");
+          linearGradient.appendChild(stop2);
 
-        defs.appendChild(linearGradient);
-        star.appendChild(defs);
+          defs.appendChild(linearGradient);
+          star.appendChild(defs);
 
-        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        path.setAttribute("fill", `url(#${gradId})`);
-        path.setAttribute("d", starPath);
-        star.appendChild(path);
-      } else {
-        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        path.setAttribute("fill", "currentColor");
-        path.setAttribute("d", starPath);
-        star.appendChild(path);
+          const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          path.setAttribute("fill", `url(#${gradId})`);
+          path.setAttribute("d", starPath);
+          star.appendChild(path);
+        } else {
+          const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          path.setAttribute("fill", "currentColor");
+          path.setAttribute("d", starPath);
+          star.appendChild(path);
+        }
+        starElements.push(star);
       }
-      starElements.push(star);
+      return starElements;
     }
-    return starElements;
-  }
 
-  function renderCourses(filteredCourses) {
-    const container = document.getElementById("courses-container");
-    container.innerHTML = '';
+    function renderCourses(filteredCourses) {
+      const container = document.getElementById("courses-container");
+      container.innerHTML = '';
 
-    filteredCourses.forEach(course => {
-      const card = document.createElement("article");
-      card.className = "card";
+      filteredCourses.forEach(course => {
+        const card = document.createElement("article");
+        card.className = "card";
 
-      const img = document.createElement("img");
-      img.src = course.image;
-      img.alt = `Imagen del curso: ${course.title}`;
-      card.appendChild(img);
+        const img = document.createElement("img");
+        img.src = course.image;
+        img.alt = `Imagen del curso: ${course.title}`;
+        card.appendChild(img);
 
-      const content = document.createElement("div");
-      content.className = "card-content";
+        const content = document.createElement("div");
+        content.className = "card-content";
 
-      const starsDiv = document.createElement("div");
-      starsDiv.className = "stars";
+        const starsDiv = document.createElement("div");
+        starsDiv.className = "stars";
 
-      const stars = createStarIcons(course.rating);
-      stars.forEach(star => starsDiv.appendChild(star));
-      content.appendChild(starsDiv);
+        const stars = createStarIcons(course.rating);
+        stars.forEach(star => starsDiv.appendChild(star));
+        content.appendChild(starsDiv);
 
-      const title = document.createElement("h2");
-      title.className = "title";
-      title.textContent = course.title;
-      content.appendChild(title);
+        const title = document.createElement("h2");
+        title.className = "title";
+        title.textContent = course.title;
+        content.appendChild(title);
 
-      const desc = document.createElement("p");
-      desc.className = "description";
-      desc.textContent = course.description;
-      content.appendChild(desc);
+        const desc = document.createElement("p");
+        desc.className = "description";
+        desc.textContent = course.description;
+        content.appendChild(desc);
 
-      const btn = document.createElement("button");
-      btn.className = "btn-acquire";
-      btn.textContent = "Adquirir Curso";
-      btn.addEventListener("click", () => {
-        alert(`Has adquirido: ${course.title}`);
+        const btn = document.createElement("button");
+        btn.className = "btn-acquire";
+        btn.textContent = "Adquirir Curso";
+        btn.addEventListener("click", () => {
+          alert(`Has adquirido: ${course.title}`);
+        });
+        content.appendChild(btn);
+
+        card.appendChild(content);
+        container.appendChild(card);
       });
-      content.appendChild(btn);
+    }
 
-      card.appendChild(content);
-      container.appendChild(card);
-    });
-  }
+    function filterCourses() {
+      const searchInput = document.getElementById("search-input");
+      const searchTerm = searchInput.value.toLowerCase();
+      const filteredCourses = courses.filter(course =>
+        course.title.toLowerCase().includes(searchTerm) ||
+        course.description.toLowerCase().includes(searchTerm)
+      );
+      renderCourses(filteredCourses);
+    }
 
-  function filterCourses() {
-    const searchInput = document.getElementById("search-input");
-    const searchTerm = searchInput.value.toLowerCase();
-    const filteredCourses = courses.filter(course => 
-      course.title.toLowerCase().includes(searchTerm) || 
-      course.description.toLowerCase().includes(searchTerm)
-    );
-    renderCourses(filteredCourses);
-  }
+    document.getElementById("search-input").addEventListener("input", filterCourses);
 
-  document.getElementById("search-input").addEventListener("input", filterCourses);
-
-  // Render all courses initially
-  renderCourses(courses);
-</script>
+    // Render all courses initially
+    renderCourses(courses);
+  </script>
 </body>
+
 </html>

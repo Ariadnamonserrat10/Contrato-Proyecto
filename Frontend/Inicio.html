@@ -1,28 +1,36 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <title>Academy - Panel de Usuario</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@500&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@500&family=Poppins:wght@300;600&display=swap"
+    rel="stylesheet">
   <style>
     .nav-link {
       transition: color 0.3s ease, transform 0.3s ease;
     }
+
     .nav-link:hover {
-      color: #3b82f6; /* Color azul */
+      color: #3b82f6;
+      /* Color azul */
       transform: scale(1.1);
     }
+
     .card {
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
+
     .card:hover {
       transform: translateY(-5px);
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     }
   </style>
 </head>
+
 <body class="bg-blue-50">
 
   <header class="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-4 shadow-lg">
@@ -34,7 +42,8 @@
         <a href="#" class="nav-link">Niveles</a>
         <a href="#" class="nav-link">Materias</a>
         <a href="#" class="nav-link">Certificados</a>
-        <a href="#" class="nav-link">Billetera</a>
+        <a href="Wallet.html" class="nav-link">Wallet</a>
+        <a href="Moneda.html" class="nav-link">Moneda</a>
       </nav>
     </div>
   </header>
@@ -42,7 +51,7 @@
   <main class="max-w-6xl mx-auto p-6">
     <h2 class="text-4xl font-bold mb-4 font-Poppins">Bienvenido a Academy</h2>
     <p class="text-lg mb-6 text-gray-700">Aquí puedes acceder a tus cursos, niveles, materias y certificados.</p>
-    
+
     <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div class="card bg-white text-gray-800 p-4 rounded-lg shadow-lg">
         <h3 class="text-2xl font-semibold mb-2">Cursos</h3>
@@ -72,4 +81,5 @@
   </footer>
 
 </body>
+
 </html>

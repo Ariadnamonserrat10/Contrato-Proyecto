@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@500&family=Poppins:wght@300;600&display=swap"
+        rel="stylesheet">
+    <title>Futuristic Wallet Interface</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Rajdhani&display=swap');
+
+        body {
+            margin: 0;
+            background: #0a0f1b;
+            font-family: 'Rajdhani', sans-serif;
+            color: #e0e6f0;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #0ff, #0099ff);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 0.1em;
+            color: #0a0f1b;
+            box-shadow: 0 0 20px #00ffff88;
+        }
+
+        header h1 {
+            margin: 0;
+            font-weight: 700;
+            font-size: 1.8rem;
+        }
+
+        nav {
+            display: flex;
+            gap: 25px;
+        }
+
+        nav a {
+            color: #0a0f1b;
+            text-transform: uppercase;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.3s ease;
+            position: relative;
+            padding: 5px 0;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: #00ffff;
+            left: 0;
+            bottom: 0;
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover::after,
+        nav a.active::after {
+            width: 100%;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 1.3fr 1fr;
+            gap: 25px;
+        }
+
+        /* Wallet Balance Card */
+        .balance-card {
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px 25px;
+            box-shadow: 0 0 30px #00ffff55;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid #00ffff66;
+        }
+
+        .balance-card h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+            color: #00ffff;
+        }
+
+        .balance-amount {
+            font-size: 3.2rem;
+            font-weight: 700;
+            color: #0af;
+            letter-spacing: 0.05em;
+            margin-bottom: 15px;
+        }
+
+        .currencies {
+            display: flex;
+            gap: 10px;
+        }
+
+        .currency {
+            background: #00223388;
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #0ff;
+            box-shadow: 0 0 10px #00ffff33 inset;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .currency:hover {
+            background: #00ffffdd;
+            color: #002233;
+        }
+
+        /* Actions Panel */
+        .actions-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .actions-panel button {
+            background: linear-gradient(135deg, #00ffffcc, #0099ffcc);
+            border: none;
+            border-radius: 16px;
+            padding: 18px 0;
+            font-size: 1.1rem;
+            color: #0a0f1b;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            box-shadow: 0 0 20px #00ffff99;
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+        }
+
+        .actions-panel button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px #00ffffcc;
+        }
+
+        /* Wallet Address & QR */
+        .wallet-info {
+            background: rgba(0, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 30px 25px;
+            box-shadow: 0 0 30px #00ffff55;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid #00ffff66;
+        }
+
+        .wallet-info h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: #00ffff;
+            margin-bottom: 20px;
+        }
+
+        .wallet-address {
+            background: #00223388;
+            border-radius: 12px;
+            padding: 10px 15px;
+            font-size: 1.1rem;
+            letter-spacing: 0.1em;
+            user-select: all;
+            color: #0ff;
+            box-shadow: 0 0 15px #00ffff44 inset;
+        }
+
+        .qr-code {
+            margin-top: 25px;
+            filter: drop-shadow(0 0 5px #00ffffaa);
+            border-radius: 16px;
+        }
+
+        /* Transactions List */
+        .transactions {
+            background: rgba(0, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 25px 30px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 0 25px #00ffff44;
+            border: 1px solid #00ffff55;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .transactions h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #00ffff;
+        }
+
+        .transaction-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #00ffff33;
+            color: #cceeff;
+        }
+
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+
+        .tx-icon {
+            font-size: 1.8rem;
+            margin-right: 15px;
+            color: #0ff;
+            flex-shrink: 0;
+            width: 32px;
+            text-align: center;
+        }
+
+        .tx-details {
+            flex: 1;
+            font-size: 0.9rem;
+        }
+
+        .tx-details .tx-type {
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 5px;
+        }
+
+        .tx-details .tx-date {
+            font-size: 0.8rem;
+            color: #66ffffaa;
+        }
+
+        .tx-amount {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #00ffcc;
+            min-width: 90px;
+            text-align: right;
+            letter-spacing: 0.1em;
+        }
+
+        .tx-amount.negative {
+            color: #ff3366;
+        }
+
+        /* Chart container */
+        .chart-container {
+            background: rgba(0, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 25px 30px;
+            box-shadow: 0 0 30px #00ffff55;
+            backdrop-filter: blur(8px);
+            border: 1px solid #00ffff66;
+            grid-column: span 2;
+            margin-top: 40px;
+        }
+
+        .chart-container h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #00ffff;
+        }
+
+        /* Scrollbar style */
+        ::-webkit-scrollbar {
+            width: 9px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #001022;
+            border-radius: 20px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #00ffffaa;
+            border-radius: 20px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00ffffdd;
+        }
+
+        /* Responsive */
+        @media (max-width: 1000px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-container {
+                grid-column: span 1;
+                margin-top: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>WALLET Stellar</h1>
+        <nav class="space-x-6">
+            <a href="Inicio.html" class="nav-link">Inicio</a>
+            <a href="cursos.html" class="nav-link">Cursos</a>
+            <a href="#" class="nav-link">Niveles</a>
+            <a href="#" class="nav-link">Materias</a>
+            <a href="#" class="nav-link">Certificados</a>
+            <a href="Wallet.html" class="nav-link">Wallet</a>
+            <a href="Moneda.html" class="nav-link">Moneda</a>
+        </nav>
+    </header>
+    <main>
+        <section class="balance-card" aria-label="Balance Card">
+            <h2>Balance</h2>
+            <div class="balance-amount" id="balanceAmount">3,542.12 XLM </div>
+            <div class="currencies">
+                <div class="currency" data-currency="XLM" title="Ethereum Balance">XLM</div>
+                <div class="currency" data-currency="BTC" title="Bitcoin Balance">BTC</div>
+                <div class="currency" data-currency="USD" title="USD Balance">USD</div>
+                <div class="currency" data-currency="USDT" title="USDT Balance">USDT</div>
+            </div>
+        </section>
+        <section class="actions-panel" aria-label="Wallet Actions">
+            <button id="sendBtn">Send</button>
+            <button id="receiveBtn">Receive</button>
+            <button id="swapBtn">Swap</button>
+            <button id="historyBtn">Transacciones</button>
+        </section>
+        <section class="wallet-info" aria-label="Wallet Information">
+            <h3>Wallet Address</h3>
+            <div class="wallet-address" id="walletAddress">0x3aB45F821784E9fB1c9F67bC15D9a9E4D9F3a678</div>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=0x3aB45F821784E9fB1c9F67bC15D9a9E4D9F3a678"
+                alt="Wallet QR Code" class="qr-code" />
+        </section>
+        <section class="transactions" aria-label="Recent Transactions">
+            <h3>transacciones</h3>
+            <div id="transactionsList" tabindex="0">
+                <!-- Transactions will be inserted here -->
+            </div>
+        </section>
+        <section class="chart-container" aria-label="Balance over Time Chart">
+            <h3>Balance Over Time</h3>
+            <canvas id="balanceChart" width="800" height="300"></canvas>
+        </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+    <script src="https://kit.fontawesome.com/a81368914c.js" crossorigin="anonymous"></script>
+    <script>
+        // Currency balances demo data
+        const balances = {
+            XLM: 3542.12,
+            BTC: 0.256,
+            USD: 13456.23,
+            USDT: 5000.50,
+        };
+
+        // Transactions demo data
+        const transactions = [
+            { type: "Sent", date: "2024-06-22 14:50", amount: -1.23, currency: "XLM", to: "0xA9B3...12Fe", icon: "fa-arrow-up-right" },
+            { type: "Received", date: "2024-06-21 19:20", amount: 0.75, currency: "BTC", from: "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2", icon: "fa-arrow-down-left" },
+            { type: "Swap", date: "2024-06-20 11:48", amount: -300, currency: "USD", details: "ETH → USD", icon: "fa-exchange-alt" },
+            { type: "Received", date: "2024-06-18 09:12", amount: 1500, currency: "USDT", from: "0xC2F6...34AB", icon: "fa-arrow-down-left" },
+            { type: "Sent", date: "2024-06-15 22:06", amount: -0.015, currency: "BTC", to: "3FZbgi29cpjq2GjdwV8eyHuJJnkLtktZc5", icon: "fa-arrow-up-right" },
+        ];
+
+        const balanceAmountElem = document.getElementById('balanceAmount');
+        const transactionsListElem = document.getElementById('transactionsList');
+        const currencyButtons = document.querySelectorAll('.currency');
+
+        // Format numbers nicely
+        function formatAmount(amount, currency) {
+            if (currency === 'USD' || currency === 'USDT') {
+                return amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+            }
+            return amount.toLocaleString('en-US', { maximumFractionDigits: 6 }) + ' ' + currency;
+        }
+
+        // Update the main balance display based on currency
+        function updateBalance(currency) {
+            if (balances[currency] !== undefined) {
+                balanceAmountElem.textContent = formatAmount(balances[currency], currency);
+            }
+            currencyButtons.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.currency === currency);
+            });
+        }
+
+        // Render transactions list
+        function renderTransactions() {
+            transactionsListElem.innerHTML = '';
+            transactions.forEach(tx => {
+                const txItem = document.createElement('div');
+                txItem.classList.add('transaction-item');
+
+                const icon = document.createElement('i');
+                icon.className = `fa-solid tx-icon ${tx.icon}`;
+                txItem.appendChild(icon);
+
+                const details = document.createElement('div');
+                details.classList.add('tx-details');
+
+                const txType = document.createElement('div');
+                txType.classList.add('tx-type');
+                txType.textContent = tx.type;
+                details.appendChild(txType);
+
+                const txDesc = document.createElement('div');
+                let descText = '';
+                if (tx.type === 'Sent') {
+                    descText = `To: ${tx.to}`;
+                } else if (tx.type === 'Received') {
+                    descText = `From: ${tx.from}`;
+                } else if (tx.type === 'Swap' && tx.details) {
+                    descText = tx.details;
+                }
+                const desc = document.createElement('div');
+                desc.textContent = descText;
+                details.appendChild(desc);
+
+
+                const date = document.createElement('div');
+                date.classList.add('tx-date');
+                date.textContent = tx.date;
+                details.appendChild(date);
+
+                txItem.appendChild(details);
+
+                const amount = document.createElement('div');
+                amount.classList.add('tx-amount');
+                amount.classList.toggle('negative', tx.amount < 0);
+                amount.textContent = formatAmount(tx.amount, tx.currency);
+                txItem.appendChild(amount);
+
+                transactionsListElem.appendChild(txItem);
+            });
+        }
+
+        // Initial render
+        updateBalance('ETH');
+        renderTransactions();
+
+        // Currency button click handlers
+        currencyButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const selected = e.currentTarget.dataset.currency;
+                updateBalance(selected);
+            });
+        });
+
+        // Chart balance over time setup using Chart.js
+        const ctx = document.getElementById('balanceChart').getContext('2d');
+        // Sample data points (timestamps and balance in ETH for demo)
+        const labels = ['01 Jun', '05 Jun', '10 Jun', '15 Jun', '20 Jun', '25 Jun', '30 Jun'];
+        const dataPoints = [3200, 3420, 3505, 3480, 3600, 3570, 3542];
+
+        const balanceChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'XLM Balance',
+                    data: dataPoints,
+                    fill: true,
+                    backgroundColor: 'rgba(0, 255, 255, 0.15)',
+                    borderColor: '#00ffff',
+                    borderWidth: 3,
+                    tension: 0.3,
+                    pointRadius: 5,
+                    pointBackgroundColor: '#00ffff',
+                    pointHoverRadius: 7,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#00ffff',
+                            font: {
+                                family: 'Orbitron, Rajdhani',
+                                size: 16,
+                                weight: '700',
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#002233cc',
+                        titleColor: '#00ffff',
+                        bodyColor: '#e0f9ff',
+                        cornerRadius: 8,
+                        displayColors: false
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: '#00ffff', font: { family: 'Rajdhani', weight: '600' } },
+                        grid: { color: '#00ffff22' }
+                    },
+                    y: {
+                        ticks: { color: '#00ffff', font: { family: 'Rajdhani', weight: '600' } },
+                        grid: { color: '#00ffff22' }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
