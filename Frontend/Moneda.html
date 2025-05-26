@@ -10,326 +10,499 @@
         rel="stylesheet">
     <title>Futuristic Wallet Interface</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Rajdhani&display=swap');
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --soft-gradient: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: #e2e8f0;
+            --text-light: #a0aec0;
+            --star-color: #fbbf24;
+            --star-bg: rgba(255, 255, 255, 0.3);
+            --neon-blue: #00f5ff;
+            --neon-purple: #9d00ff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
-            margin: 0;
-            background: #0a0f1b;
-            font-family: 'Rajdhani', sans-serif;
-            color: #e0e6f0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            color: var(--text-primary);
             overflow-x: hidden;
         }
 
+        /* Animated background particles */
+        .bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(0, 245, 255, 0.5);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+            box-shadow: 0 0 10px 2px var(--neon-blue);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
+            50% { transform: translateY(-30px) rotate(180deg); opacity: 0.8; }
+        }
+
+        /* Header */
         header {
-            background: linear-gradient(135deg, #0ff, #0099ff);
+            background: rgba(15, 12, 41, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
             padding: 20px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-family: 'Orbitron', sans-serif;
-            letter-spacing: 0.1em;
-            color: #0a0f1b;
-            box-shadow: 0 0 20px #00ffff88;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
         }
 
         header h1 {
-            margin: 0;
+            font-family: 'Montserrat', sans-serif;
             font-weight: 700;
             font-size: 1.8rem;
+            color: white;
+            text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-purple);
+            letter-spacing: 1px;
         }
 
         nav {
             display: flex;
-            gap: 25px;
+            gap: 20px;
         }
 
-        nav a {
-            color: #0a0f1b;
-            text-transform: uppercase;
-            font-weight: 600;
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
-            transition: 0.3s ease;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
             position: relative;
-            padding: 5px 0;
+            overflow: hidden;
+            font-family: 'Roboto', sans-serif;
         }
 
-        nav a::after {
+        .nav-link::before {
             content: '';
             position: absolute;
-            width: 0;
-            height: 2px;
-            background: #00ffff;
-            left: 0;
-            bottom: 0;
-            transition: width 0.3s ease;
-        }
-
-        nav a:hover::after,
-        nav a.active::after {
+            top: 0;
+            left: -100%;
             width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.2), transparent);
+            transition: left 0.6s ease;
         }
 
+        .nav-link:hover::before,
+        .nav-link.active::before {
+            left: 100%;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: white;
+            transform: translateY(-2px);
+            text-shadow: 0 0 5px var(--neon-blue);
+        }
+
+        /* Main Container */
         main {
             max-width: 1200px;
-            margin: 30px auto;
-            padding: 0 20px;
+            margin: 40px auto;
+            padding: 0 30px;
             display: grid;
-            grid-template-columns: 1fr 1.3fr 1fr;
-            gap: 25px;
+            grid-template-columns: 1fr;
+            gap: 30px;
         }
 
-        /* Wallet Balance Card */
+        /* Balance Card */
         .balance-card {
-            background: rgba(0, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 30px 25px;
-            box-shadow: 0 0 30px #00ffff55;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            backdrop-filter: blur(10px);
-            border: 1px solid #00ffff66;
+            background: rgba(47, 43, 99, 0.5);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(0, 245, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            padding: 32px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .balance-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                transparent 0%,
+                rgba(0, 245, 255, 0.1) 50%,
+                transparent 100%
+            );
+            transform: rotate(30deg);
+            animation: shine 6s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(30deg); }
+            100% { transform: translateX(100%) rotate(30deg); }
         }
 
         .balance-card h2 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.6rem;
+            font-size: 1.2rem;
+            color: var(--text-light);
             margin-bottom: 10px;
-            color: #00ffff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .balance-amount {
-            font-size: 3.2rem;
+            font-size: 2.5rem;
             font-weight: 700;
-            color: #0af;
-            letter-spacing: 0.05em;
-            margin-bottom: 15px;
+            margin-bottom: 30px;
+            background: linear-gradient(to right, var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 10px rgba(0, 245, 255, 0.3);
         }
 
         .currencies {
             display: flex;
-            gap: 10px;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
         }
 
         .currency {
-            background: #00223388;
-            border-radius: 12px;
-            padding: 10px 20px;
-            font-weight: 700;
-            font-size: 1rem;
-            color: #0ff;
-            box-shadow: 0 0 10px #00ffff33 inset;
+            padding: 8px 20px;
+            border-radius: 20px;
+            background: rgba(0, 245, 255, 0.1);
+            border: 1px solid rgba(0, 245, 255, 0.3);
+            color: var(--text-secondary);
             cursor: pointer;
-            transition: background 0.3s ease;
+            transition: all 0.3s ease;
+            font-weight: 500;
         }
 
         .currency:hover {
-            background: #00ffffdd;
-            color: #002233;
+            background: rgba(0, 245, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .currency.active {
+            background: linear-gradient(to right, var(--neon-blue), var(--neon-purple));
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 0 15px rgba(0, 245, 255, 0.5);
         }
 
         /* Actions Panel */
         .actions-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
         }
 
         .actions-panel button {
-            background: linear-gradient(135deg, #00ffffcc, #0099ffcc);
+            padding: 15px;
+            border-radius: 12px;
             border: none;
-            border-radius: 16px;
-            padding: 18px 0;
-            font-size: 1.1rem;
-            color: #0a0f1b;
-            font-weight: 700;
-            letter-spacing: 0.05em;
+            background: rgba(47, 43, 99, 0.7);
+            color: white;
+            font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 0 20px #00ffff99;
-            transition: transform 0.2s ease, box-shadow 0.3s ease;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 245, 255, 0.2);
+        }
+
+        .actions-panel button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.1), transparent);
+            transition: 0.5s;
+        }
+
+        .actions-panel button:hover::before {
+            left: 100%;
         }
 
         .actions-panel button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px #00ffffcc;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 245, 255, 0.3);
         }
 
-        /* Wallet Address & QR */
+        #sendBtn {
+            background: linear-gradient(135deg, rgba(0, 245, 255, 0.3), rgba(157, 0, 255, 0.3));
+        }
+
+        #receiveBtn {
+            background: linear-gradient(135deg, rgba(157, 0, 255, 0.3), rgba(255, 0, 212, 0.3));
+        }
+
+        #swapBtn {
+            background: linear-gradient(135deg, rgba(255, 0, 212, 0.3), rgba(0, 245, 255, 0.3));
+        }
+
+        #historyBtn {
+            background: linear-gradient(135deg, rgba(0, 245, 255, 0.3), rgba(255, 0, 212, 0.3));
+        }
+
+        /* Wallet Info */
         .wallet-info {
-            background: rgba(0, 255, 255, 0.12);
-            border-radius: 20px;
-            padding: 30px 25px;
-            box-shadow: 0 0 30px #00ffff55;
+            background: rgba(47, 43, 99, 0.5);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(0, 245, 255, 0.2);
+            padding: 25px;
             text-align: center;
-            backdrop-filter: blur(10px);
-            border: 1px solid #00ffff66;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
         .wallet-info h3 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.5rem;
-            color: #00ffff;
-            margin-bottom: 20px;
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .wallet-address {
-            background: #00223388;
-            border-radius: 12px;
-            padding: 10px 15px;
-            font-size: 1.1rem;
-            letter-spacing: 0.1em;
-            user-select: all;
-            color: #0ff;
-            box-shadow: 0 0 15px #00ffff44 inset;
+            font-family: 'Roboto Mono', monospace;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            word-break: break-all;
+            color: var(--neon-blue);
+            border: 1px solid rgba(0, 245, 255, 0.2);
         }
 
         .qr-code {
-            margin-top: 25px;
-            filter: drop-shadow(0 0 5px #00ffffaa);
-            border-radius: 16px;
+            width: 140px;
+            height: 140px;
+            margin: 0 auto;
+            border: 5px solid rgba(0, 245, 255, 0.3);
+            border-radius: 8px;
+            padding: 5px;
+            background: white;
         }
 
-        /* Transactions List */
+        /* Transactions */
         .transactions {
-            background: rgba(0, 255, 255, 0.08);
-            border-radius: 20px;
-            padding: 25px 30px;
-            backdrop-filter: blur(8px);
-            box-shadow: 0 0 25px #00ffff44;
-            border: 1px solid #00ffff55;
-            max-height: 600px;
-            overflow-y: auto;
+            background: rgba(47, 43, 99, 0.5);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(0, 245, 255, 0.2);
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
         .transactions h3 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: #00ffff;
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #transactionsList {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        /* Custom scrollbar */
+        #transactionsList::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #transactionsList::-webkit-scrollbar-track {
+            background: rgba(0, 245, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        #transactionsList::-webkit-scrollbar-thumb {
+            background: var(--neon-blue);
+            border-radius: 10px;
         }
 
         .transaction-item {
             display: flex;
             align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid #00ffff33;
-            color: #cceeff;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
         }
 
-        .transaction-item:last-child {
-            border-bottom: none;
+        .transaction-item:hover {
+            background: rgba(0, 245, 255, 0.1);
+            transform: translateX(5px);
         }
 
         .tx-icon {
-            font-size: 1.8rem;
+            font-size: 1.2rem;
             margin-right: 15px;
-            color: #0ff;
-            flex-shrink: 0;
-            width: 32px;
-            text-align: center;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(0, 245, 255, 0.1);
+            color: var(--neon-blue);
         }
 
         .tx-details {
-            flex: 1;
-            font-size: 0.9rem;
+            flex-grow: 1;
+            text-align: left;
         }
 
-        .tx-details .tx-type {
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+        .tx-type {
+            font-weight: 600;
             margin-bottom: 5px;
+            color: white;
         }
 
-        .tx-details .tx-date {
+        .tx-date {
             font-size: 0.8rem;
-            color: #66ffffaa;
+            color: var(--text-light);
         }
 
         .tx-amount {
             font-weight: 700;
             font-size: 1.1rem;
-            color: #00ffcc;
-            min-width: 90px;
-            text-align: right;
-            letter-spacing: 0.1em;
         }
 
         .tx-amount.negative {
-            color: #ff3366;
+            color: #ff4d4d;
         }
 
-        /* Chart container */
+        .tx-amount:not(.negative) {
+            color: #4dff4d;
+        }
+
+        /* Chart Container */
         .chart-container {
-            background: rgba(0, 255, 255, 0.12);
-            border-radius: 20px;
-            padding: 25px 30px;
-            box-shadow: 0 0 30px #00ffff55;
-            backdrop-filter: blur(8px);
-            border: 1px solid #00ffff66;
-            grid-column: span 2;
-            margin-top: 40px;
+            background: rgba(47, 43, 99, 0.5);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(0, 245, 255, 0.2);
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
         .chart-container h3 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: #00ffff;
-        }
-
-        /* Scrollbar style */
-        ::-webkit-scrollbar {
-            width: 9px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #001022;
-            border-radius: 20px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #00ffffaa;
-            border-radius: 20px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #00ffffdd;
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         /* Responsive */
-        @media (max-width: 1000px) {
+        @media (max-width: 1024px) {
             main {
                 grid-template-columns: 1fr;
             }
 
-            .chart-container {
-                grid-column: span 1;
-                margin-top: 30px;
+            .actions-panel {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            nav {
+                gap: 10px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .balance-amount {
+                font-size: 2rem;
+            }
+
+            .currency {
+                padding: 6px 15px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .actions-panel {
+                grid-template-columns: 1fr;
+            }
+
+            .balance-card, .wallet-info, .transactions, .chart-container {
+                padding: 20px;
             }
         }
     </style>
 </head>
 
 <body>
+    <div class="bg-particles" id="particles"></div>
+    
     <header>
         <h1>WALLET Stellar</h1>
         <nav class="space-x-6">
-            <a href="Inicio.html" class="nav-link">Inicio</a>
-            <a href="cursos.html" class="nav-link">Cursos</a>
-            <a href="#" class="nav-link">Niveles</a>
-            <a href="materias.html" class="nav-link">Materias</a>
-            <a href="cetificado.html" class="nav-link">Certificados</a>
-            <a href="Wallet.html" class="nav-link">Wallet</a>
-            <a href="Moneda.html" class="nav-link">Moneda</a>
+            <a href="Inicio.html" class="nav-link">🏠 Inicio</a>
+            <a href="cursos.html" class="nav-link">📚 Cursos</a>
+            <a href="#" class="nav-link">🎯 Niveles</a>
+            <a href="materias.html" class="nav-link">📖 Materias</a>
+            <a href="cetificado.html" class="nav-link">🏆 Certificados</a>
+            <a href="Wallet.html" class="nav-link active">💎 Wallet</a>
+            <a href="Moneda.html" class="nav-link">🪙 Moneda</a>
         </nav>
     </header>
     <main>
         <section class="balance-card" aria-label="Balance Card">
             <h2>Balance</h2>
-            <div class="balance-amount" id="balanceAmount">3,542.12 XLM </div>
+            <div class="balance-amount" id="balanceAmount">3,542.12 XLM</div>
             <div class="currencies">
-                <div class="currency" data-currency="XLM" title="Ethereum Balance">XLM</div>
+                <div class="currency active" data-currency="XLM" title="Stellar Balance">XLM</div>
                 <div class="currency" data-currency="BTC" title="Bitcoin Balance">BTC</div>
                 <div class="currency" data-currency="USD" title="USD Balance">USD</div>
                 <div class="currency" data-currency="USDT" title="USDT Balance">USDT</div>
@@ -343,8 +516,8 @@
         </section>
         <section class="wallet-info" aria-label="Wallet Information">
             <h3>Wallet Address</h3>
-            <div class="wallet-address" id="walletAddress">0x3aB45F821784E9fB1c9F67bC15D9a9E4D9F3a678</div>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=0x3aB45F821784E9fB1c9F67bC15D9a9E4D9F3a678"
+            <div class="wallet-address" id="walletAddress">GABCDEF1234567890XYZSTELLARWALLETADDRESS</div>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=GABCDEF1234567890XYZSTELLARWALLETADDRESS"
                 alt="Wallet QR Code" class="qr-code" />
         </section>
         <section class="transactions" aria-label="Recent Transactions">
@@ -361,6 +534,22 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
     <script src="https://kit.fontawesome.com/a81368914c.js" crossorigin="anonymous"></script>
     <script>
+        // Create floating particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                particle.style.width = (Math.random() * 3 + 1) + 'px';
+                particle.style.height = particle.style.width;
+                container.appendChild(particle);
+            }
+        }
+
         // Currency balances demo data
         const balances = {
             XLM: 3542.12,
@@ -371,11 +560,11 @@
 
         // Transactions demo data
         const transactions = [
-            { type: "Sent", date: "2024-06-22 14:50", amount: -1.23, currency: "XLM", to: "0xA9B3...12Fe", icon: "fa-arrow-up-right" },
-            { type: "Received", date: "2024-06-21 19:20", amount: 0.75, currency: "BTC", from: "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2", icon: "fa-arrow-down-left" },
-            { type: "Swap", date: "2024-06-20 11:48", amount: -300, currency: "USD", details: "ETH → USD", icon: "fa-exchange-alt" },
-            { type: "Received", date: "2024-06-18 09:12", amount: 1500, currency: "USDT", from: "0xC2F6...34AB", icon: "fa-arrow-down-left" },
-            { type: "Sent", date: "2024-06-15 22:06", amount: -0.015, currency: "BTC", to: "3FZbgi29cpjq2GjdwV8eyHuJJnkLtktZc5", icon: "fa-arrow-up-right" },
+            { type: "Sent", date: "2024-06-22 14:50", amount: -1.23, currency: "XLM", to: "GXYZ123...789ABC", icon: "fa-arrow-up-right" },
+            { type: "Received", date: "2024-06-21 19:20", amount: 0.75, currency: "BTC", from: "GBTC456...DEF789", icon: "fa-arrow-down-left" },
+            { type: "Swap", date: "2024-06-20 11:48", amount: -300, currency: "USD", details: "XLM → USD", icon: "fa-exchange-alt" },
+            { type: "Received", date: "2024-06-18 09:12", amount: 1500, currency: "USDT", from: "GUSDT789...JKL012", icon: "fa-arrow-down-left" },
+            { type: "Sent", date: "2024-06-15 22:06", amount: -0.015, currency: "BTC", to: "GBTC345...MNO678", icon: "fa-arrow-up-right" },
         ];
 
         const balanceAmountElem = document.getElementById('balanceAmount');
@@ -432,7 +621,6 @@
                 desc.textContent = descText;
                 details.appendChild(desc);
 
-
                 const date = document.createElement('div');
                 date.classList.add('tx-date');
                 date.textContent = tx.date;
@@ -451,7 +639,8 @@
         }
 
         // Initial render
-        updateBalance('ETH');
+        createParticles();
+        updateBalance('XLM');
         renderTransactions();
 
         // Currency button click handlers
@@ -464,7 +653,7 @@
 
         // Chart balance over time setup using Chart.js
         const ctx = document.getElementById('balanceChart').getContext('2d');
-        // Sample data points (timestamps and balance in ETH for demo)
+        // Sample data points (timestamps and balance in XLM for demo)
         const labels = ['01 Jun', '05 Jun', '10 Jun', '15 Jun', '20 Jun', '25 Jun', '30 Jun'];
         const dataPoints = [3200, 3420, 3505, 3480, 3600, 3570, 3542];
 
@@ -476,12 +665,12 @@
                     label: 'XLM Balance',
                     data: dataPoints,
                     fill: true,
-                    backgroundColor: 'rgba(0, 255, 255, 0.15)',
-                    borderColor: '#00ffff',
+                    backgroundColor: 'rgba(0, 245, 255, 0.1)',
+                    borderColor: '#00f5ff',
                     borderWidth: 3,
                     tension: 0.3,
                     pointRadius: 5,
-                    pointBackgroundColor: '#00ffff',
+                    pointBackgroundColor: '#00f5ff',
                     pointHoverRadius: 7,
                 }]
             },
@@ -490,35 +679,52 @@
                 plugins: {
                     legend: {
                         labels: {
-                            color: '#00ffff',
+                            color: '#00f5ff',
                             font: {
-                                family: 'Orbitron, Rajdhani',
+                                family: 'Poppins',
                                 size: 16,
-                                weight: '700',
+                                weight: '600',
                             }
                         }
                     },
                     tooltip: {
-                        backgroundColor: '#002233cc',
-                        titleColor: '#00ffff',
-                        bodyColor: '#e0f9ff',
+                        backgroundColor: '#0f0c29',
+                        titleColor: '#00f5ff',
+                        bodyColor: '#ffffff',
                         cornerRadius: 8,
-                        displayColors: false
+                        displayColors: false,
+                        borderColor: '#00f5ff',
+                        borderWidth: 1
                     }
                 },
                 scales: {
                     x: {
-                        ticks: { color: '#00ffff', font: { family: 'Rajdhani', weight: '600' } },
-                        grid: { color: '#00ffff22' }
+                        ticks: { 
+                            color: '#00f5ff', 
+                            font: { 
+                                family: 'Poppins', 
+                                weight: '500' 
+                            } 
+                        },
+                        grid: { 
+                            color: 'rgba(0, 245, 255, 0.1)' 
+                        }
                     },
                     y: {
-                        ticks: { color: '#00ffff', font: { family: 'Rajdhani', weight: '600' } },
-                        grid: { color: '#00ffff22' }
+                        ticks: { 
+                            color: '#00f5ff', 
+                            font: { 
+                                family: 'Poppins', 
+                                weight: '500' 
+                            } 
+                        },
+                        grid: { 
+                            color: 'rgba(0, 245, 255, 0.1)' 
+                        }
                     }
                 }
             }
         });
     </script>
 </body>
-
 </html>
