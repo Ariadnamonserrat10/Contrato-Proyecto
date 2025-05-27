@@ -13,6 +13,7 @@ const nameEl = document.getElementById('name');
 const emailEl = document.getElementById('email');
 const passwordEl = document.getElementById('password');
 const result = document.getElementById('result');
+const clavePublicaManualInput = document.getElementById('clavePublicaManual');
 
 // Verificar si Freighter está instalado
 function isFreighterAvailable() {
@@ -248,3 +249,6 @@ if (typeof module !== 'undefined' && module.exports) {
     RPC_URL
   };
 }
+
+ultimaClavePublica = pair.publicKey();
+clavePublicaManualInput.value = ultimaClavePublica;

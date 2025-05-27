@@ -702,7 +702,7 @@
                     const secretKey = localStorage.getItem('stellarSecret');
                     const publicKey = localStorage.getItem('stellarPublic');
                     // Dirección de destino (la cuenta de la plataforma)
-                    const destino = "GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"; // Cambia por la cuenta de tu plataforma
+                    const destino = "GB3S2S4FGCTDTVGQ4UEB4SVVILOVATVEUIQ3WDLL224SUCFOWTBPYCQF";
 
                     if (!secretKey || !publicKey) {
                         alert("No se encontró la cuenta Stellar logueada.");
@@ -779,11 +779,11 @@
         // Start when DOM is loaded
         document.addEventListener('DOMContentLoaded', init);
 
-        // Guardar claves en localStorage (ejemplo)
-        const ultimaClaveSecreta = "tu_clave_secreta_aqui";
-        const ultimaClavePublica = "tu_clave_publica_aqui";
-        localStorage.setItem('stellarSecret', ultimaClaveSecreta);
-        localStorage.setItem('stellarPublic', ultimaClavePublica);
+        // // Guardar claves en localStorage (ejemplo, reemplaza con tu lógica de obtención de claves)
+        // const ultimaClaveSecreta = "SXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"; // Clave secreta de ejemplo
+        // const ultimaClavePublica = "GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"; // Clave pública de ejemplo
+        // localStorage.setItem('stellarSecret', ultimaClaveSecreta);
+        // localStorage.setItem('stellarPublic', ultimaClavePublica);
     </script>
 </body>
 

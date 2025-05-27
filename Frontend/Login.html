@@ -36,6 +36,10 @@
             <span class="text-sm">Clave secreta de cuenta (S...):</span>
             <input type="text" id="claveSecretaManual" class="w-full border border-gray-300 p-2 rounded mt-1" placeholder="S..." />
           </label>
+          <label class="block mt-2">
+            <span class="text-sm">Clave pública de cuenta (G...):</span>
+            <input type="text" id="clavePublicaManual" class="w-full border border-gray-300 p-2 rounded mt-1 bg-gray-100" placeholder="G..." readonly />
+          </label>
           <button id="usarCuentaExistente" type="button" class="bg-yellow-500 text-white px-3 py-2 rounded hover:bg-yellow-600 transition">
             Usar cuenta existente
           </button>
@@ -107,6 +111,7 @@
     const crearCuentaBtn = document.getElementById('crearCuenta');
     const usarCuentaExistenteBtn = document.getElementById('usarCuentaExistente');
     const claveSecretaManualInput = document.getElementById('claveSecretaManual');
+    const clavePublicaManualInput = document.getElementById('clavePublicaManual');
     const stellarAccountInfo = document.getElementById('stellarAccountInfo');
 
     // Crear y financiar cuenta Stellar Testnet
@@ -160,8 +165,8 @@
       }
       try {
         const pair = StellarSdk.Keypair.fromSecret(claveSecreta);
-        ultimaClaveSecreta = claveSecreta;
         ultimaClavePublica = pair.publicKey();
+        clavePublicaManualInput.value = ultimaClavePublica;
         stellarAccountInfo.textContent = `Cuenta cargada:\nPublic Key: ${ultimaClavePublica}\nSecret Key: ${ultimaClaveSecreta}\n`;
         // Mostrar balance
         const server = new StellarSdk.Horizon.Server("https://horizon-testnet.stellar.org");
