@@ -483,6 +483,7 @@
         <!-- Course cards will be injected here -->
     </main>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stellar-sdk/11.2.2/stellar-sdk.min.js"></script>
     <script>
         const courses = [
             { 
@@ -491,7 +492,8 @@
                 description: "Aprende los fundamentos de JavaScript desde cero, ideal para principiantes. Domina variables, funciones, eventos y manipulación del DOM.", 
                 image: "https://images.unsplash.com/photo-1581091012184-5b6446cc1184?auto=format&fit=crop&w=600&q=80", 
                 rating: 3.5,
-                category: "Programación"
+                category: "Programación",
+                price: 10
             },
             { 
                 id: 2, 
@@ -499,7 +501,8 @@
                 description: "Construye interfaces de usuario dinámicas con React y sus principales herramientas. Aprende hooks, contexto y manejo de estado.", 
                 image: "https://images.unsplash.com/photo-1505682634904-d7c74a0a7185?auto=format&fit=crop&w=600&q=80", 
                 rating: 5.0,
-                category: "Frontend"
+                category: "Frontend",
+                price: 15
             },
             { 
                 id: 3, 
@@ -507,7 +510,8 @@
                 description: "Descubre cómo usar Python y librerías populares para análisis y visualización de datos. Pandas, NumPy, Matplotlib y más.", 
                 image: "https://images.unsplash.com/photo-1537432376769-00a0f1f6c34f?auto=format&fit=crop&w=600&q=80", 
                 rating: 4.2,
-                category: "Data Science"
+                category: "Data Science",
+                price: 20
             },
             { 
                 id: 4, 
@@ -515,7 +519,8 @@
                 description: "Conceptos básicos y técnicas fundamentales para iniciarse en Machine Learning. Algoritmos supervisados y no supervisados.", 
                 image: "https://images.unsplash.com/photo-1526378721188-66ddcb7f9564?auto=format&fit=crop&w=600&q=80", 
                 rating: 2.8,
-                category: "IA & ML"
+                category: "IA & ML",
+                price: 25
             },
             { 
                 id: 5, 
@@ -523,7 +528,8 @@
                 description: "Aprende los principios del diseño de experiencia e interfaces para productos digitales. Figma, prototipado y testing.", 
                 image: "https://images.unsplash.com/photo-1542831371-d531d36971e6?auto=format&fit=crop&w=600&q=80", 
                 rating: 4.6,
-                category: "Diseño"
+                category: "Diseño",
+                price: 30
             },
             { 
                 id: 6, 
@@ -531,7 +537,8 @@
                 description: "Domina las técnicas más efectivas para promocionar productos y servicios en línea. SEO, SEM, redes sociales y analytics.", 
                 image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&q=80", 
                 rating: 3.9,
-                category: "Marketing"
+                category: "Marketing",
+                price: 35
             },
             { 
                 id: 7, 
@@ -539,7 +546,8 @@
                 description: "Aprende conceptos avanzados de Java para desarrollar aplicaciones complejas. Spring Framework, microservicios y arquitectura.", 
                 image: "https://images.unsplash.com/photo-1517433456452-f9633a875f6f?auto=format&fit=crop&w=600&q=80", 
                 rating: 2.5,
-                category: "Backend"
+                category: "Backend",
+                price: 40
             },
             { 
                 id: 8, 
@@ -547,7 +555,8 @@
                 description: "Entiende la tecnología blockchain y cómo funcionan las criptomonedas hoy en día. Smart contracts y DeFi.", 
                 image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=600&q=80", 
                 rating: 4.9,
-                category: "Blockchain"
+                category: "Blockchain",
+                price: 50
             }
         ];
 
@@ -596,6 +605,7 @@
                     const stop2 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
                     stop2.setAttribute("offset", "50%");
                     stop2.setAttribute("stop-color", "var(--star-bg)");
+                    stop2.setAttribute("offset", "100%");
                     stop2.setAttribute("stop-opacity", "1");
                     linearGradient.appendChild(stop2);
 
@@ -680,18 +690,57 @@
                 desc.textContent = course.description;
                 content.appendChild(desc);
 
-                // Button
+                // Button con precio
                 const btn = document.createElement("button");
                 btn.className = "course-button";
-                btn.innerHTML = `✨ Adquirir Curso`;
-                btn.addEventListener("click", () => {
+                btn.innerHTML = `✨ Adquirir Curso<br><span style="font-size:0.9em;">${course.price} LXM</span>`;
+                btn.addEventListener("click", async () => {
                     btn.innerHTML = `<div class="loading"></div> Procesando...`;
-                    setTimeout(() => {
-                        alert(`¡Felicidades! Has adquirido: ${course.title}`);
+                    btn.disabled = true;
+
+                    // Recupera la clave secreta y pública del usuario desde localStorage
+                    const secretKey = localStorage.getItem('stellarSecret');
+                    const publicKey = localStorage.getItem('stellarPublic');
+                    // Dirección de destino (la cuenta de la plataforma)
+                    const destino = "GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"; // Cambia por la cuenta de tu plataforma
+
+                    if (!secretKey || !publicKey) {
+                        alert("No se encontró la cuenta Stellar logueada.");
+                        btn.innerHTML = `✨ Adquirir Curso<br><span style="font-size:0.9em;">${course.price} LXM</span>`;
+                        btn.disabled = false;
+                        return;
+                    }
+
+                    try {
+                        const StellarSdk = window.StellarSdk;
+                        const server = new StellarSdk.Horizon.Server("https://horizon-testnet.stellar.org");
+                        const sourceKeypair = StellarSdk.Keypair.fromSecret(secretKey);
+                        const sourceAccount = await server.loadAccount(publicKey);
+
+                        const transaction = new StellarSdk.TransactionBuilder(sourceAccount, {
+                            fee: await server.fetchBaseFee(),
+                            networkPassphrase: StellarSdk.Networks.TESTNET
+                        })
+                        .addOperation(StellarSdk.Operation.payment({
+                            destination: destino,
+                            asset: StellarSdk.Asset.native(),
+                            amount: course.price.toString()
+                        }))
+                        .setTimeout(30)
+                        .build();
+
+                        transaction.sign(sourceKeypair);
+                        await server.submitTransaction(transaction);
+
+                        alert(`¡Felicidades! Has adquirido: ${course.title}\nSe descontaron ${course.price} LXM de tu cuenta.`);
                         btn.innerHTML = `✅ Curso Adquirido`;
                         btn.style.background = 'var(--soft-gradient)';
                         btn.style.color = 'var(--text-primary)';
-                    }, 1500);
+                    } catch (error) {
+                        alert("Error al procesar el pago: " + error);
+                        btn.innerHTML = `✨ Adquirir Curso<br><span style="font-size:0.9em;">${course.price} LXM</span>`;
+                        btn.disabled = false;
+                    }
                 });
                 content.appendChild(btn);
 
@@ -729,6 +778,12 @@
 
         // Start when DOM is loaded
         document.addEventListener('DOMContentLoaded', init);
+
+        // Guardar claves en localStorage (ejemplo)
+        const ultimaClaveSecreta = "tu_clave_secreta_aqui";
+        const ultimaClavePublica = "tu_clave_publica_aqui";
+        localStorage.setItem('stellarSecret', ultimaClaveSecreta);
+        localStorage.setItem('stellarPublic', ultimaClavePublica);
     </script>
 </body>
 
