@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (getBtn) getBtn.onclick = () => ejecutarAccion('get_user');
 });
 
-// Funciones auxiliares para Soroban (para implementar según tu contrato)
+// Funciones auxiliares para Soroban 
 
 // Convertir valores a XDR para Soroban
 function toScVal(value, type = 'string') {
