@@ -1,11 +1,16 @@
 // Variables del contrato
 const CONTRACT_ID = 'CDS3VGIAZFIZUG3GL6LWAXLOXWCRIIBDPPRS4225LLLEHPGTFDNF4PQK';
-const RPC_URL = 'https://rpc-futurenet.stellar.org';
+// Usar endpoints y passphrase consistentes con Testnet público
+// Horizon público Testnet (para consultar cuentas y enviar transacciones)
+const RPC_URL = 'https://horizon-testnet.stellar.org';
+// Para operaciones Soroban en Testnet público puedes usar el RPC de Soroban Testnet
+const SOROBAN_RPC_URL = 'https://rpc-testnet.stellar.org';
 
 // Variables globales para Freighter
 let connectedWallet = null;
 let publicKey = null;
-let networkPassphrase = 'Test SDF Future Network ; October 2022'; // Para Futurenet
+// Passphrase oficial de la Testnet pública
+let networkPassphrase = StellarSdk.Networks.TESTNET;
 
 // Elementos del DOM
 const form = document.getElementById('userForm');
@@ -111,8 +116,33 @@ async function ejecutarAccion(accion) {
     // Crear servidor de Stellar
     const server = new StellarSdk.Server(RPC_URL);
     
-    // Obtener cuenta
-    const account = await server.loadAccount(publicKey);
+    // Obtener cuenta: si no existe, ofrecer financiarla (friendbot) en Testnet
+    let account;
+    try {
+      account = await server.loadAccount(publicKey);
+    } catch (err) {
+      // Detectar account missing / 404 de Horizon
+      const notFound = (err && (err.status === 404 || (err.response && err.response.status === 404))) || (err && err.message && err.message.toLowerCase().includes('resource missing'));
+      if (notFound) {
+        const wantFund = confirm('La cuenta no existe o no está activa en Testnet. ¿Deseas financiarla ahora con friendbot?');
+        if (wantFund) {
+          try {
+            const res = await fetch(`https://friendbot.stellar.org?addr=${encodeURIComponent(publicKey)}`);
+            const json = await res.json();
+            console.log('Friendbot respuesta:', json);
+            // Reintentar cargar la cuenta
+            await new Promise(r => setTimeout(r, 1000));
+            account = await server.loadAccount(publicKey);
+          } catch (fbErr) {
+            throw new Error('No se pudo financiar la cuenta con friendbot: ' + (fbErr.message || fbErr));
+          }
+        } else {
+          throw new Error('Cuenta no activa en Testnet. Operación cancelada por el usuario.');
+        }
+      } else {
+        throw err;
+      }
+    }
     
     // Construir transacción (ejemplo genérico)
     const transaction = new StellarSdk.TransactionBuilder(account, {
@@ -141,15 +171,15 @@ async function ejecutarAccion(accion) {
     transaction.addOperation(contractOperation);
     */
 
-    // Por ahora, simulamos la transacción
-    const builtTransaction = transaction.setTimeout(30).build();
-    
-    // Firmar con Freighter
-    const signedTransaction = await signTransactionWithFreighter(builtTransaction.toXDR());
-    
-    // Enviar transacción
-    const transactionFromXDR = StellarSdk.TransactionBuilder.fromXDR(signedTransaction, networkPassphrase);
-    const response = await server.submitTransaction(transactionFromXDR);
+  // Por ahora, simulamos la transacción (si decides crear operaciones reales, usa esta plantilla)
+  const builtTransaction = transaction.setTimeout(30).build();
+
+  // Firmar con Freighter: Freighter espera XDR en base64 o el objeto de transacción según su API
+  const signedXdr = await signTransactionWithFreighter(builtTransaction.toXDR());
+
+  // Convertir XDR firmado a Transaction y enviar a Horizon
+  const transactionFromXDR = StellarSdk.TransactionBuilder.fromXDR(signedXdr, networkPassphrase);
+  const response = await server.submitTransaction(transactionFromXDR);
     
     // Mostrar resultado
     result.textContent = `✓ Transacción exitosa!\nHash: ${response.hash}\nAcción: ${accion}\nNombre: ${name}\nWallet: ${publicKey}`;

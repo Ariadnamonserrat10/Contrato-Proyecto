@@ -5,9 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <title>Cursos Disponibles</title>
     <style>
         :root {
@@ -38,7 +36,6 @@
             overflow-x: hidden;
         }
 
-        /* Animated background particles */
         .bg-particles {
             position: fixed;
             top: 0;
@@ -63,7 +60,6 @@
             50% { transform: translateY(-20px) rotate(180deg); opacity: 0.8; }
         }
 
-        /* Header */
         header {
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
@@ -125,7 +121,6 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
-        /* Search Section */
         .search-section {
             max-width: 1200px;
             margin: 40px auto 20px;
@@ -168,7 +163,6 @@
             background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px);
             color: white;
-            placeholder-color: rgba(255, 255, 255, 0.7);
             transition: all 0.3s ease;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
         }
@@ -184,7 +178,6 @@
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
         }
 
-        /* Main Container */
         main {
             max-width: 1400px;
             margin: 20px auto 60px;
@@ -194,7 +187,6 @@
             gap: 30px;
         }
 
-        /* Course Cards */
         .course-card {
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
@@ -310,6 +302,11 @@
             letter-spacing: 0.5px;
         }
 
+        .course-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .course-button::before {
             content: '';
             position: absolute;
@@ -323,17 +320,16 @@
             transition: all 0.6s ease;
         }
 
-        .course-button:hover::before {
+        .course-button:hover:not(:disabled)::before {
             width: 300px;
             height: 300px;
         }
 
-        .course-button:hover {
+        .course-button:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 8px 28px rgba(102, 126, 234, 0.4);
         }
 
-        /* No Results */
         .no-results {
             grid-column: 1 / -1;
             text-align: center;
@@ -363,7 +359,6 @@
             font-size: 1rem;
         }
 
-        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -382,18 +377,25 @@
             background: rgba(255, 255, 255, 0.5);
         }
 
-        /* Floating animation for cards */
         @keyframes cardFloat {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-8px); }
         }
 
-        .search-container {
-            animation: cardFloat 6s ease-in-out infinite;
-            animation-delay: 0s;
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
         }
 
-        /* Responsive */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         @media (max-width: 1200px) {
             main {
                 grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -437,21 +439,6 @@
                 padding: 20px;
             }
         }
-
-        /* Loading animation */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
     </style>
 </head>
 
@@ -477,9 +464,7 @@
         </div>
     </section>
     
-    <main id="courses-container">
-        <!-- Course cards will be injected here -->
-    </main>
+    <main id="courses-container"></main>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stellar-sdk/11.2.2/stellar-sdk.min.js"></script>
     <script>
@@ -558,7 +543,6 @@
             }
         ];
 
-        // Create floating particles
         function createParticles() {
             const container = document.querySelector('.bg-particles');
             for (let i = 0; i < 50; i++) {
@@ -658,7 +642,6 @@
                 const content = document.createElement("div");
                 content.className = "course-content";
 
-                // Rating section
                 const ratingDiv = document.createElement("div");
                 ratingDiv.className = "course-rating";
 
@@ -676,47 +659,73 @@
 
                 content.appendChild(ratingDiv);
 
-                // Title
                 const title = document.createElement("h2");
                 title.className = "course-title";
                 title.textContent = course.title;
                 content.appendChild(title);
 
-                // Description
                 const desc = document.createElement("p");
                 desc.className = "course-description";
                 desc.textContent = course.description;
                 content.appendChild(desc);
 
-                // Button con precio
                 const btn = document.createElement("button");
                 btn.className = "course-button";
-                btn.innerHTML = `✨ Adquirir Curso<br><span style="font-size:0.9em;">${course.price} LXM</span>`;
+                btn.innerHTML = `✨ Adquirir Curso<br><span style="font-size:0.9em;">${course.price} XLM</span>`;
                 btn.addEventListener("click", async () => {
+                    const originalHTML = btn.innerHTML;
                     btn.innerHTML = `<div class="loading"></div> Procesando...`;
                     btn.disabled = true;
 
-                    // Recupera la clave secreta y pública del usuario desde localStorage
                     const secretKey = localStorage.getItem('stellarSecret');
                     const publicKey = localStorage.getItem('stellarPublic');
-                    // Dirección de destino (la cuenta de la plataforma)
                     const destino = "GB3S2S4FGCTDTVGQ4UEB4SVVILOVATVEUIQ3WDLL224SUCFOWTBPYCQF";
 
                     if (!secretKey || !publicKey) {
-                        alert("No se encontró la cuenta Stellar logueada.");
-                        btn.innerHTML = `✨ Adquirir Curso<br><span style="font-size:0.9em;">${course.price} LXM</span>`;
+                        alert("⚠️ No se encontró la cuenta Stellar. Por favor, inicia sesión primero.");
+                        btn.innerHTML = originalHTML;
                         btn.disabled = false;
                         return;
                     }
 
                     try {
+                        console.log('=== INICIANDO PAGO ===');
+                        console.log('Curso:', course.title);
+                        console.log('Precio:', course.price, 'XLM');
+                        console.log('Cuenta origen:', publicKey);
+                        console.log('Cuenta destino:', destino);
+
                         const StellarSdk = window.StellarSdk;
                         const server = new StellarSdk.Horizon.Server("https://horizon-testnet.stellar.org");
-                        const sourceKeypair = StellarSdk.Keypair.fromSecret(secretKey);
-                        const sourceAccount = await server.loadAccount(publicKey);
+                        
+                        let sourceKeypair;
+                        try {
+                            sourceKeypair = StellarSdk.Keypair.fromSecret(secretKey);
+                            console.log('✓ Clave secreta válida');
+                        } catch (e) {
+                            throw new Error('Clave secreta inválida. Por favor, verifica tus credenciales.');
+                        }
 
+                        if (sourceKeypair.publicKey() !== publicKey) {
+                            throw new Error('Las claves no coinciden. Por favor, vuelve a iniciar sesión.');
+                        }
+                        console.log('✓ Claves validadas correctamente');
+
+                        console.log('Cargando cuenta...');
+                        const sourceAccount = await server.loadAccount(publicKey);
+                        console.log('✓ Cuenta cargada');
+                        
+                        const balances = sourceAccount.balances;
+                        const xlmBalance = balances.find(b => b.asset_type === 'native');
+                        console.log('Balance actual:', xlmBalance ? xlmBalance.balance : '0', 'XLM');
+
+                        console.log('Obteniendo fee...');
+                        const baseFee = await server.fetchBaseFee();
+                        console.log('✓ Fee base:', baseFee, 'stroops');
+
+                        console.log('Construyendo transacción...');
                         const transaction = new StellarSdk.TransactionBuilder(sourceAccount, {
-                            fee: await server.fetchBaseFee(),
+                            fee: baseFee.toString(),
                             networkPassphrase: StellarSdk.Networks.TESTNET
                         })
                         .addOperation(StellarSdk.Operation.payment({
@@ -724,19 +733,64 @@
                             asset: StellarSdk.Asset.native(),
                             amount: course.price.toString()
                         }))
-                        .setTimeout(30)
+                        .setTimeout(180)
                         .build();
+                        console.log('✓ Transacción construida');
 
+                        console.log('Firmando transacción...');
                         transaction.sign(sourceKeypair);
-                        await server.submitTransaction(transaction);
+                        console.log('✓ Transacción firmada');
+                        
+                        console.log('Enviando transacción a la red...');
+                        const result = await server.submitTransaction(transaction);
+                        console.log('✅ TRANSACCIÓN EXITOSA');
+                        console.log('Hash:', result.hash);
+                        console.log('Ledger:', result.ledger);
 
-                        alert(`¡Felicidades! Has adquirido: ${course.title}\nSe descontaron ${course.price} LXM de tu cuenta.`);
+                        alert(`✅ ¡Felicidades! Has adquirido: ${course.title}\n\n💰 Se descontaron ${course.price} XLM de tu cuenta.\n\n🔗 Hash: ${result.hash.substring(0, 20)}...`);
                         btn.innerHTML = `✅ Curso Adquirido`;
                         btn.style.background = 'var(--soft-gradient)';
                         btn.style.color = 'var(--text-primary)';
                     } catch (error) {
-                        alert("Error al procesar el pago: " + error);
-                        btn.innerHTML = `✨ Adquirir Curso<br><span style="font-size:0.9em;">${course.price} LXM</span>`;
+                        console.error('❌ ERROR EN LA TRANSACCIÓN');
+                        console.error('Error completo:', error);
+                        
+                        let errorMessage = "Error desconocido al procesar el pago";
+                        
+                        if (error.message && !error.response) {
+                            errorMessage = error.message;
+                        } else if (error.response && error.response.data) {
+                            const errorData = error.response.data;
+                            console.error('Datos del error:', errorData);
+                            
+                            if (errorData.extras && errorData.extras.result_codes) {
+                                const codes = errorData.extras.result_codes;
+                                console.error('Códigos de error:', codes);
+                                
+                                if (codes.transaction === 'tx_failed') {
+                                    if (codes.operations && codes.operations[0] === 'op_underfunded') {
+                                        errorMessage = `❌ No tienes suficientes fondos.\n\nNecesitas: ${course.price} XLM + fees (~0.00001 XLM)\n\n💡 Obtén fondos de testnet en:\nhttps://laboratory.stellar.org/#account-creator`;
+                                    } else if (codes.operations && codes.operations[0] === 'op_no_destination') {
+                                        errorMessage = "❌ La cuenta de destino no existe o no está activa en testnet";
+                                    } else if (codes.operations && codes.operations[0] === 'op_line_full') {
+                                        errorMessage = "❌ La cuenta de destino ha alcanzado su límite";
+                                    } else {
+                                        errorMessage = `❌ Error en la operación: ${codes.operations ? codes.operations[0] : 'desconocido'}`;
+                                    }
+                                } else if (codes.transaction === 'tx_bad_seq') {
+                                    errorMessage = "❌ Error de secuencia. Por favor, intenta nuevamente.";
+                                } else if (codes.transaction === 'tx_insufficient_fee') {
+                                    errorMessage = "❌ Fee insuficiente. Por favor, intenta nuevamente.";
+                                } else {
+                                    errorMessage = `❌ Error de transacción: ${codes.transaction}`;
+                                }
+                            } else if (errorData.title) {
+                                errorMessage = `❌ ${errorData.title}`;
+                            }
+                        }
+
+                        alert(errorMessage + "\n\n🔍 Revisa la consola del navegador (F12) para más detalles.");
+                        btn.innerHTML = originalHTML;
                         btn.disabled = false;
                     }
                 });
@@ -758,30 +812,31 @@
             renderCourses(filteredCourses);
         }
 
-        // Initialize
         function init() {
             createParticles();
             renderCourses(courses);
             
             document.getElementById("search-input").addEventListener("input", filterCourses);
             
-            // Add parallax effect
             document.addEventListener('scroll', () => {
                 const scrolled = window.pageYOffset;
                 const parallax = document.querySelector('.bg-particles');
                 const speed = scrolled * 0.3;
                 parallax.style.transform = `translateY(${speed}px)`;
             });
+
+            // Verificar si hay credenciales guardadas
+            const hasCredentials = localStorage.getItem('stellarSecret') && localStorage.getItem('stellarPublic');
+            if (hasCredentials) {
+                console.log('✓ Credenciales Stellar encontradas');
+                console.log('Cuenta pública:', localStorage.getItem('stellarPublic'));
+            } else {
+                console.warn('⚠️ No se encontraron credenciales Stellar en localStorage');
+                console.log('💡 Asegúrate de iniciar sesión con Freighter o guardar las credenciales en localStorage');
+            }
         }
 
-        // Start when DOM is loaded
         document.addEventListener('DOMContentLoaded', init);
-
-        // // Guardar claves en localStorage (ejemplo, reemplaza con tu lógica de obtención de claves)
-        // const ultimaClaveSecreta = "SXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"; // Clave secreta de ejemplo
-        // const ultimaClavePublica = "GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"; // Clave pública de ejemplo
-        // localStorage.setItem('stellarSecret', ultimaClaveSecreta);
-        // localStorage.setItem('stellarPublic', ultimaClavePublica);
     </script>
 </body>
 

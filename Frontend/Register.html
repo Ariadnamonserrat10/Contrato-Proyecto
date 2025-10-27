@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Registro - Stellar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@500&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-r from-blue-400 to-blue-600 text-gray-800 min-h-screen flex items-center justify-center">
+  <div class="max-w-md mx-auto p-8 bg-white rounded-lg shadow-lg">
+    <h1 class="text-2xl font-bold text-center mb-4">Crear una nueva cuenta</h1>
+    <form id="registerForm" class="space-y-4">
+      <div>
+        <label for="r_username" class="block text-sm font-medium text-gray-700">Nombre de usuario</label>
+        <input id="r_username" type="text" required class="w-full border p-2 rounded" placeholder="Nombre de usuario" />
+      </div>
+      <div>
+        <label for="r_email" class="block text-sm font-medium text-gray-700">Correo electrónico</label>
+        <input id="r_email" type="email" required class="w-full border p-2 rounded" placeholder="correo@ejemplo.com" />
+      </div>
+      <div>
+        <label for="r_password" class="block text-sm font-medium text-gray-700">Contraseña</label>
+        <input id="r_password" type="password" required class="w-full border p-2 rounded" placeholder="Contraseña" />
+      </div>
+      <div>
+        <label for="r_password2" class="block text-sm font-medium text-gray-700">Confirmar contraseña</label>
+        <input id="r_password2" type="password" required class="w-full border p-2 rounded" placeholder="Repite la contraseña" />
+      </div>
+      <div class="flex justify-between items-center">
+        <a href="Login.html" class="text-blue-600 hover:underline">¿Ya tienes cuenta? Inicia sesión</a>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Registrarse</button>
+      </div>
+    </form>
+    <div id="message" class="mt-4 text-sm"></div>
+  </div>
+
+  <script>
+    // Helper: convertir ArrayBuffer a hex
+    function buf2hex(buffer) {
+      return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
+    }
+
+    async function hashPassword(password) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(password);
+      const hash = await crypto.subtle.digest('SHA-256', data);
+      return buf2hex(hash);
+    }
+
+    function loadUsers() {
+      try {
+        return JSON.parse(localStorage.getItem('users') || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveUsers(users) {
+      localStorage.setItem('users', JSON.stringify(users));
+    }
+
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('r_username').value.trim();
+      const email = document.getElementById('r_email').value.trim();
+      const password = document.getElementById('r_password').value;
+      const password2 = document.getElementById('r_password2').value;
+      const msgDiv = document.getElementById('message');
+      msgDiv.textContent = '';
+
+      if (password !== password2) {
+        msgDiv.textContent = 'Las contraseñas no coinciden.';
+        msgDiv.className = 'text-red-600';
+        return;
+      }
+      if (password.length < 6) {
+        msgDiv.textContent = 'La contraseña debe tener al menos 6 caracteres.';
+        msgDiv.className = 'text-red-600';
+        return;
+      }
+
+      const users = loadUsers();
+      if (users.find(u => u.username === username || u.email === email)) {
+        msgDiv.textContent = 'Ya existe un usuario con ese nombre o correo.';
+        msgDiv.className = 'text-red-600';
+        return;
+      }
+
+      const hashed = await hashPassword(password);
+      const newUser = { username, email, passwordHash: hashed };
+      users.push(newUser);
+      saveUsers(users);
+
+      msgDiv.textContent = 'Cuenta creada correctamente. Redirigiendo al login...';
+      msgDiv.className = 'text-green-600';
+      setTimeout(() => { window.location.href = 'Login.html'; }, 1200);
+    });
+  </script>
+</body>
+</html>

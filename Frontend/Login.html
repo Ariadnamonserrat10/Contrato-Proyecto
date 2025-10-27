@@ -21,8 +21,19 @@
     
     <form id="loginForm" class="space-y-6">
       <div>
-        <label for="username" class="block text-lg font-medium text-gray-700 font-Roboto">Nombre de usuario</label>
-        <input id="username" type="text" placeholder="Ingrese su nombre de usuario" class="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200" required />
+        <label for="username" class="block text-lg font-medium text-gray-700 font-Roboto">Nombre de usuario o correo</label>
+        <div class="flex gap-2">
+          <input id="username" type="text" placeholder="Ingrese su nombre de usuario o correo" class="flex-1 w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200" required autocomplete="off" />
+          <select id="userSelect" class="w-48 border border-gray-300 rounded px-2" title="Selecciona usuario registrado">
+            <option value="">Elegir usuario...</option>
+          </select>
+        </div>
+        <p class="text-xs text-gray-500 mt-1">Selecciona un usuario para autocompletar el campo o escribe uno nuevo.</p>
+      </div>
+
+      <div>
+        <label for="loginPassword" class="block text-lg font-medium text-gray-700 font-Roboto">Contraseña</label>
+        <input id="loginPassword" type="password" placeholder="Introduce tu contraseña" class="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200" />
       </div>
 
       <!-- Sección para crear/cargar cuenta Stellar manual -->
@@ -55,9 +66,10 @@
         </div>
       </div>
       
-      <div class="flex justify-center mt-4">
-        <button type="submit" id="loginBtn" disabled class="bg-gray-400 text-white px-6 py-3 rounded-lg transition transform disabled:cursor-not-allowed">
-          Conectar
+      <div class="flex justify-between items-center mt-4">
+        <a href="Register.html" class="text-blue-600 hover:underline">Crear nueva cuenta</a>
+        <button type="submit" id="loginBtn" class="bg-blue-600 text-white px-6 py-3 rounded-lg transition transform hover:scale-105">
+          Iniciar sesión
         </button>
       </div>
     </form>
@@ -85,9 +97,11 @@
   </div>
 
   <script>
-    // Variables del contrato
-    const CONTRACT_ID = 'CDS3VGIAZFIZUG3GL6LWAXLOXWCRIIBDPPRS4225LLLEHPGTFDNF4PQK';
-    const RPC_URL = 'https://rpc-futurenet.stellar.org';
+  // Variables del contrato
+  const CONTRACT_ID = 'CDS3VGIAZFIZUG3GL6LWAXLOXWCRIIBDPPRS4225LLLEHPGTFDNF4PQK';
+  // Usar Testnet público (coherente con friendbot y horizon-testnet)
+  const RPC_URL = 'https://horizon-testnet.stellar.org';
+  const SOROBAN_RPC_URL = 'https://rpc-testnet.stellar.org';
     
     // Variables globales
     let connectedWallet = null;
@@ -291,13 +305,85 @@
     // Al cargar la página, intentar conectar con la cuenta Stellar si las claves están en localStorage
     window.addEventListener('load', () => {
       const secretKey = localStorage.getItem('stellarSecret');
-      const publicKey = localStorage.getItem('stellarPublic');
-      if (!secretKey || !publicKey) {
-          alert("No se encontró la cuenta Stellar logueada.");
-          return;
+      const publicKeyStored = localStorage.getItem('stellarPublic');
+      if (secretKey && publicKeyStored) {
+        claveSecretaManualInput.value = secretKey;
+        // intenta cargar cuenta pero no es crítico si falla
+        usarCuentaExistenteBtn.click();
+      } else {
+        // no mostrar alert, solo indicar que no hay wallet conectada
+        walletStatus.classList.remove('hidden');
+        walletStatus.classList.add('bg-blue-50', 'text-blue-800');
+        walletAddress.textContent = 'No hay cuenta Stellar conectada.';
       }
-      claveSecretaManualInput.value = secretKey;
-      usarCuentaExistenteBtn.click();
+      // poblar selector de usuarios desde localStorage
+      try {
+        const users = loadUsers();
+        const select = document.getElementById('userSelect');
+        if (select) {
+          // limpiar opciones excepto la primera
+          select.innerHTML = '<option value="">Elegir usuario...</option>';
+          users.forEach(u => {
+            const opt = document.createElement('option');
+            opt.value = u.username || u.email;
+            opt.textContent = u.username + (u.email ? (' — ' + u.email) : '');
+            select.appendChild(opt);
+          });
+          select.addEventListener('change', (e) => {
+            if (e.target.value) document.getElementById('username').value = e.target.value;
+          });
+        }
+      } catch (e) { console.warn('No se pudieron cargar usuarios para el selector', e); }
+    });
+
+    // --- Gestión de usuarios (registro/login) usando localStorage y SHA-256 ---
+    function buf2hex(buffer) {
+      return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
+    }
+    async function hashPassword(password) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(password);
+      const hash = await crypto.subtle.digest('SHA-256', data);
+      return buf2hex(hash);
+    }
+    function loadUsers() {
+      try { return JSON.parse(localStorage.getItem('users') || '[]'); } catch (e) { return []; }
+    }
+
+    // Modificar el submit del login para validar usuario y contraseña (usar campo de contraseña en lugar de prompt)
+    loginForm.removeEventListener && loginForm.removeEventListener('submit', ()=>{});
+    loginForm.addEventListener('submit', async function(event) {
+      event.preventDefault();
+      const usernameOrEmail = document.getElementById('username').value.trim();
+      const passwordInput = document.getElementById('loginPassword').value;
+      const imageFile = fileInput.files[0];
+
+      const users = loadUsers();
+      if (users.length > 0) {
+        if (!passwordInput) {
+          alert('Contraseña requerida para iniciar sesión.');
+          return;
+        }
+        const hashed = await hashPassword(passwordInput);
+        const found = users.find(u => (u.username === usernameOrEmail || u.email === usernameOrEmail) && u.passwordHash === hashed);
+        if (!found) {
+          alert('Credenciales inválidas. Verifica usuario/contraseña.');
+          return;
+        }
+      }
+
+      // Verificar que haya wallet conectado o claves manuales
+      if (!connectedWallet && !ultimaClavePublica) {
+        const ok = confirm('No hay cuenta Stellar conectada. ¿Deseas continuar sin wallet?');
+        if (!ok) return;
+      }
+
+      // Guarda las claves en localStorage si existen
+      if (ultimaClaveSecreta) localStorage.setItem('stellarSecret', ultimaClaveSecreta);
+      if (ultimaClavePublica) localStorage.setItem('stellarPublic', ultimaClavePublica);
+
+      showResult(`✓ Autenticación exitosa para ${usernameOrEmail}\nCuenta: ${connectedWallet || ultimaClavePublica || 'N/A'}`, 'success');
+      setTimeout(() => { window.location.href = "inicio.html"; }, 1000);
     });
   </script>
 </body>
