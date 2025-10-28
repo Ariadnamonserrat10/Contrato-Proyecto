@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@500&display=swap" rel="stylesheet">
+  <!-- Stellar SDK necesario para generar cuentas y friendbot -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/stellar-sdk/11.2.2/stellar-sdk.min.js"></script>
 </head>
 <body class="bg-gradient-to-r from-blue-400 to-blue-600 text-gray-800 min-h-screen flex items-center justify-center">
   <div class="max-w-md mx-auto p-8 bg-white rounded-lg shadow-lg">
@@ -48,6 +50,49 @@
       return buf2hex(hash);
     }
 
+    // --- Cifrado AES-GCM de la clave secreta usando PBKDF2 ---
+    function toBase64(buffer) {
+      const bytes = new Uint8Array(buffer);
+      let binary = '';
+      const chunkSize = 0x8000;
+      for (let i = 0; i < bytes.length; i += chunkSize) {
+        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+      }
+      return btoa(binary);
+    }
+    function fromBase64(b64) {
+      const binary = atob(b64);
+      const len = binary.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
+      return bytes.buffer;
+    }
+
+    async function deriveKey(password, salt, iterations = 100000) {
+      const enc = new TextEncoder();
+      const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), {name: 'PBKDF2'}, false, ['deriveKey']);
+      return crypto.subtle.deriveKey(
+        {name: 'PBKDF2', salt: salt, iterations: iterations, hash: 'SHA-256'},
+        keyMaterial,
+        {name: 'AES-GCM', length: 256},
+        false,
+        ['encrypt','decrypt']
+      );
+    }
+
+    async function encryptSecret(secret, password) {
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const key = await deriveKey(password, salt.buffer);
+      const enc = new TextEncoder();
+      const cipher = await crypto.subtle.encrypt({name: 'AES-GCM', iv: iv}, key, enc.encode(secret));
+      return {
+        cipherText: toBase64(cipher),
+        salt: toBase64(salt.buffer),
+        iv: toBase64(iv.buffer)
+      };
+    }
+
     function loadUsers() {
       try {
         return JSON.parse(localStorage.getItem('users') || '[]');
@@ -87,14 +132,42 @@
         return;
       }
 
-      const hashed = await hashPassword(password);
-      const newUser = { username, email, passwordHash: hashed };
-      users.push(newUser);
-      saveUsers(users);
+      try {
+        const hashed = await hashPassword(password);
 
-      msgDiv.textContent = 'Cuenta creada correctamente. Redirigiendo al login...';
-      msgDiv.className = 'text-green-600';
-      setTimeout(() => { window.location.href = 'Login.html'; }, 1200);
+        // Generar par de claves Stellar y financiar cuenta en Testnet mediante friendbot
+        const StellarSdk = window.StellarSdk;
+        if (!StellarSdk) {
+          msgDiv.textContent = 'StellarSdk no disponible en este entorno.';
+          msgDiv.className = 'text-red-600';
+          return;
+        }
+        const pair = StellarSdk.Keypair.random();
+        const publicKey = pair.publicKey();
+        const secretKey = pair.secret();
+
+        msgDiv.textContent = `Generando cuenta Stellar y solicitando fondos para ${publicKey}...`;
+        msgDiv.className = '';
+        // Llamada a friendbot (Testnet)
+        const fbRes = await fetch(`https://friendbot.stellar.org?addr=${encodeURIComponent(publicKey)}`);
+        const fbJson = await fbRes.json();
+
+        // Cifrar la clave secreta usando la contraseña del usuario
+        const encrypted = await encryptSecret(secretKey, password);
+
+        const newUser = { username, email, passwordHash: hashed, stellarPublic: publicKey, encryptedSecret: encrypted.cipherText, encSalt: encrypted.salt, encIv: encrypted.iv };
+        users.push(newUser);
+        saveUsers(users);
+
+        msgDiv.textContent = 'Cuenta creada y financiada correctamente. Redirigiendo al login...';
+        msgDiv.className = 'text-green-600';
+        // Opcional: mostrar detalles en consola
+        console.log('Friendbot response:', fbJson);
+        setTimeout(() => { window.location.href = 'Login.html'; }, 1200);
+      } catch (err) {
+        msgDiv.textContent = 'Error creando la cuenta: ' + (err.message || err);
+        msgDiv.className = 'text-red-600';
+      }
     });
   </script>
 </body>

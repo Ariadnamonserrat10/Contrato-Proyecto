@@ -28,9 +28,8 @@
             <label class="block text-sm">Contraseña</label>
             <input id="u_password" type="password" class="w-full border p-2 rounded" placeholder="Contraseña" required />
           </div>
-          <div class="flex items-center justify-between">
+          <div class="flex items-center justify-start">
             <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Agregar usuario</button>
-            <button id="clearStorage" type="button" class="text-sm text-red-600 underline">Limpiar usuarios (solo pruebas)</button>
           </div>
           <div id="msg" class="text-sm mt-2"></div>
         </form>
@@ -115,13 +114,7 @@
       renderUsers();
     });
 
-    document.getElementById('clearStorage').addEventListener('click', () => {
-      if (!confirm('¿Borrar todos los usuarios almacenados en localStorage? Esto es irreversible.')) return;
-      localStorage.removeItem('users');
-      renderUsers();
-      document.getElementById('msg').textContent = 'Usuarios borrados.';
-      document.getElementById('msg').className = 'text-yellow-600';
-    });
+    // Nota: la opción de borrar usuarios se ha eliminado de la UI para evitar que usuarios normales puedan eliminar cuentas.
 
     // Al cargar
     renderUsers();

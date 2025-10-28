@@ -18,17 +18,12 @@
     <div id="walletStatus" class="mb-4 p-3 rounded-lg text-center hidden">
       <p id="walletAddress" class="text-sm font-mono"></p>
     </div>
+    <!-- Estado de utilidades (oculto) -->
     
     <form id="loginForm" class="space-y-6">
       <div>
         <label for="username" class="block text-lg font-medium text-gray-700 font-Roboto">Nombre de usuario o correo</label>
-        <div class="flex gap-2">
-          <input id="username" type="text" placeholder="Ingrese su nombre de usuario o correo" class="flex-1 w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200" required autocomplete="off" />
-          <select id="userSelect" class="w-48 border border-gray-300 rounded px-2" title="Selecciona usuario registrado">
-            <option value="">Elegir usuario...</option>
-          </select>
-        </div>
-        <p class="text-xs text-gray-500 mt-1">Selecciona un usuario para autocompletar el campo o escribe uno nuevo.</p>
+        <input id="username" type="text" placeholder="Ingrese su nombre de usuario o correo" class="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200" required autocomplete="off" />
       </div>
 
       <div>
@@ -102,6 +97,33 @@
   // Usar Testnet público (coherente con friendbot y horizon-testnet)
   const RPC_URL = 'https://horizon-testnet.stellar.org';
   const SOROBAN_RPC_URL = 'https://rpc-testnet.stellar.org';
+  // Limpieza automática inicial de usuarios de prueba (p. ej. 'monserrat')
+  (function cleanTestUsersImmediate(){
+    try {
+      const raw = localStorage.getItem('users');
+      if (!raw) return;
+      const users = JSON.parse(raw);
+      if (!Array.isArray(users) || users.length === 0) return;
+      const filtered = users.filter(u => {
+        if (!u || !u.username) return false;
+        const name = String(u.username).trim().toLowerCase();
+        // eliminar si contiene 'monserrat' o si el username está vacío
+        if (name.length === 0) return false;
+        if (name.includes('monserrat')) return false;
+        return true;
+      });
+      if (filtered.length !== users.length) {
+        // backup por si acaso
+        try { localStorage.setItem('users_backup_' + Date.now(), raw); } catch(e){}
+        localStorage.setItem('users', JSON.stringify(filtered));
+        // si la clave pública corresponde a uno eliminado, borrarla para evitar mostrarla
+        try { localStorage.removeItem('stellarPublic'); } catch(e){}
+        console.log('Usuarios de prueba eliminados automáticamente.');
+      }
+    } catch (e) {
+      console.warn('Error en limpieza automática de usuarios:', e);
+    }
+  })();
     
     // Variables globales
     let connectedWallet = null;
@@ -130,12 +152,60 @@
 
     // Crear y financiar cuenta Stellar Testnet
     crearCuentaBtn.addEventListener('click', async () => {
-      stellarAccountInfo.textContent = "Generando claves...";
+      stellarAccountInfo.textContent = "Iniciando proceso de creación/financiación...";
       const StellarSdk = window.StellarSdk;
       if (!StellarSdk) {
         stellarAccountInfo.textContent = "No se pudo cargar StellarSdk.";
         return;
       }
+
+      // Si Freighter está instalado, ofrecer usar la cuenta activa de Freighter (más práctico para que compras se registren en la wallet)
+      if (typeof window.freighterApi !== 'undefined') {
+        const usarFreighter = confirm('Se detectó Freighter. ¿Deseas financiar la cuenta actualmente seleccionada en Freighter (recomendado) en lugar de generar una nueva clave local)?');
+        if (usarFreighter) {
+          try {
+            // Solicitar permisos si es necesario, y obtener la clave pública de Freighter
+            try {
+              const isAllowed = await window.freighterApi.isAllowed();
+              if (!isAllowed) await window.freighterApi.setAllowed();
+            } catch (permErr) {
+              // intentar conectar si isAllowed no está disponible
+              if (typeof window.freighterApi.connect === 'function') {
+                await window.freighterApi.connect();
+              }
+            }
+
+            const freighterPublic = await window.freighterApi.getPublicKey();
+            stellarAccountInfo.textContent = `Cuenta Freighter detectada: ${freighterPublic}\nSolicitando fondos (friendbot) para esa cuenta...`;
+            // Intentar financiar la cuenta Freighter en Testnet mediante friendbot
+            const fbRes = await fetch(`https://friendbot.stellar.org?addr=${encodeURIComponent(freighterPublic)}`);
+            const fbJson = await fbRes.json();
+            stellarAccountInfo.textContent += `\n✅ Solicitud de friendbot enviada. Respuesta: ${JSON.stringify(fbJson)}`;
+
+            // Actualizar estado y UI usando la cuenta de Freighter
+            modoManual = false;
+            connectedWallet = freighterPublic;
+            publicKey = freighterPublic;
+            walletAddress.textContent = `Cuenta Freighter: ${freighterPublic.substring(0,10)}...${freighterPublic.substring(freighterPublic.length - 10)}`;
+            walletStatus.classList.remove('hidden');
+            walletStatus.classList.add('bg-green-50', 'text-green-800');
+            loginBtn.disabled = false;
+            loginBtn.classList.remove('bg-gray-400');
+            loginBtn.classList.add('bg-blue-600', 'hover:bg-blue-700', 'hover:scale-105');
+            return;
+          } catch (err) {
+            console.error('Error financiando cuenta Freighter:', err);
+            stellarAccountInfo.textContent += `\n❌ Error al financiar la cuenta Freighter: ${err}`;
+            // continuar al flujo de generación local si el usuario lo desea
+            const fallback = confirm('No se pudo financiar la cuenta Freighter. ¿Deseas generar una clave nueva local en su lugar (deberás importarla manualmente en Freighter si quieres usarla allí)?');
+            if (!fallback) return;
+            // si fallback true, continue to generate new keypair below
+          }
+        }
+      }
+
+      // Flujo por defecto: generar un par de claves local y financiarlo con friendbot
+      stellarAccountInfo.textContent = "Generando claves locales...";
       const pair = StellarSdk.Keypair.random();
       const publicKeyGen = pair.publicKey();
       const secretKey = pair.secret();
@@ -157,16 +227,28 @@
         modoManual = true;
         connectedWallet = publicKeyGen;
         publicKey = publicKeyGen;
+        // Guardar clave secreta en localStorage para permitir compras sin pedir contraseña
+        try {
+          localStorage.setItem('stellarSecret', secretKey);
+          localStorage.setItem('stellarPublic', publicKeyGen);
+          console.log('Se guardó stellarSecret en localStorage para sesión local (recuerda limpiar si no lo deseas).');
+        } catch(e) {
+          console.warn('No se pudo guardar la clave secreta en localStorage:', e);
+        }
         walletAddress.textContent = `Cuenta manual: ${publicKeyGen.substring(0, 10)}...${publicKeyGen.substring(publicKeyGen.length - 10)}`;
         walletStatus.classList.remove('hidden');
         walletStatus.classList.add('bg-yellow-100', 'text-yellow-800');
         loginBtn.disabled = false;
         loginBtn.classList.remove('bg-gray-400');
         loginBtn.classList.add('bg-blue-600', 'hover:bg-blue-700', 'hover:scale-105');
+        // Avisar al usuario cómo importar en Freighter si desea usar esa cuenta desde la extensión
+        stellarAccountInfo.textContent += `\n\n⚠️ Nota: esta clave se generó localmente y no está en Freighter. Si deseas usarla desde Freighter, importa la clave secreta manualmente en la extensión.`;
       } catch (error) {
         stellarAccountInfo.textContent += `\n❌ Error al crear/fondear cuenta:\n${error}`;
       }
     });
+
+    // (La limpieza de usuarios de prueba se hace automáticamente al iniciar el script.)
 
     // Usar cuenta existente with secret key
     usarCuentaExistenteBtn.addEventListener('click', async () => {
@@ -193,6 +275,11 @@
         modoManual = true;
         connectedWallet = ultimaClavePublica;
         publicKey = ultimaClavePublica;
+        // Guardar secret en localStorage para evitar pedir contraseña al comprar
+        try {
+          localStorage.setItem('stellarSecret', claveSecreta);
+          localStorage.setItem('stellarPublic', ultimaClavePublica);
+        } catch(e) { console.warn('No se pudo guardar clave en localStorage', e); }
         walletAddress.textContent = `Cuenta manual: ${ultimaClavePublica.substring(0, 10)}...${ultimaClavePublica.substring(ultimaClavePublica.length - 10)}`;
         walletStatus.classList.remove('hidden');
         walletStatus.classList.add('bg-yellow-100', 'text-yellow-800');
@@ -286,9 +373,8 @@
         alert('Por favor, crea o carga una cuenta primero.');
         return;
       }
-      // Guarda las claves en localStorage
-      localStorage.setItem('stellarSecret', ultimaClaveSecreta);
-      localStorage.setItem('stellarPublic', ultimaClavePublica);
+  // Guarda solo la clave pública en localStorage; la clave secreta no se guarda en claro
+  if (ultimaClavePublica) localStorage.setItem('stellarPublic', ultimaClavePublica);
 
       showResult(`✓ Conexión exitosa para ${username}\nCuenta: ${connectedWallet}`, 'success');
       setTimeout(() => {
@@ -304,36 +390,34 @@
 
     // Al cargar la página, intentar conectar con la cuenta Stellar si las claves están en localStorage
     window.addEventListener('load', () => {
-      const secretKey = localStorage.getItem('stellarSecret');
       const publicKeyStored = localStorage.getItem('stellarPublic');
-      if (secretKey && publicKeyStored) {
-        claveSecretaManualInput.value = secretKey;
-        // intenta cargar cuenta pero no es crítico si falla
-        usarCuentaExistenteBtn.click();
+      if (publicKeyStored) {
+        // Mostramos la clave pública almacenada pero la clave secreta está cifrada por usuario y no se carga automáticamente.
+        walletStatus.classList.remove('hidden');
+        walletStatus.classList.add('bg-blue-50', 'text-blue-800');
+        walletAddress.textContent = `Cuenta pública (protegida): ${publicKeyStored.substring(0,10)}...${publicKeyStored.substring(publicKeyStored.length - 10)}`;
       } else {
         // no mostrar alert, solo indicar que no hay wallet conectada
         walletStatus.classList.remove('hidden');
         walletStatus.classList.add('bg-blue-50', 'text-blue-800');
         walletAddress.textContent = 'No hay cuenta Stellar conectada.';
       }
-      // poblar selector de usuarios desde localStorage
+      // No poblamos selector: el flujo ahora exige registro manual en Register.html.
+
+      // Limpieza automática de usuarios de prueba (por ejemplo "monserrat").
       try {
         const users = loadUsers();
-        const select = document.getElementById('userSelect');
-        if (select) {
-          // limpiar opciones excepto la primera
-          select.innerHTML = '<option value="">Elegir usuario...</option>';
-          users.forEach(u => {
-            const opt = document.createElement('option');
-            opt.value = u.username || u.email;
-            opt.textContent = u.username + (u.email ? (' — ' + u.email) : '');
-            select.appendChild(opt);
-          });
-          select.addEventListener('change', (e) => {
-            if (e.target.value) document.getElementById('username').value = e.target.value;
-          });
+        const filtered = users.filter(u => {
+          if (!u || !u.username) return true;
+          return u.username.toLowerCase().indexOf('monserrat') === -1;
+        });
+        if (filtered.length !== users.length) {
+          localStorage.setItem('users', JSON.stringify(filtered));
+          showResult('Se eliminaron usuarios de prueba encontrados (p. ej. "monserrat").', 'info');
         }
-      } catch (e) { console.warn('No se pudieron cargar usuarios para el selector', e); }
+      } catch (e) {
+        console.warn('Error limpiando usuarios de prueba:', e);
+      }
     });
 
     // --- Gestión de usuarios (registro/login) usando localStorage y SHA-256 ---
@@ -345,6 +429,38 @@
       const data = encoder.encode(password);
       const hash = await crypto.subtle.digest('SHA-256', data);
       return buf2hex(hash);
+    }
+    // --- Funciones para descifrar la clave secreta cifrada en Register ---
+    function b64ToArrayBuffer(b64) {
+      const binary = atob(b64);
+      const len = binary.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
+      return bytes.buffer;
+    }
+    async function deriveKey(password, saltB64, iterations = 100000) {
+      const saltBuf = b64ToArrayBuffer(saltB64);
+      const enc = new TextEncoder();
+      const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), {name: 'PBKDF2'}, false, ['deriveKey']);
+      return crypto.subtle.deriveKey(
+        {name: 'PBKDF2', salt: saltBuf, iterations: iterations, hash: 'SHA-256'},
+        keyMaterial,
+        {name: 'AES-GCM', length: 256},
+        false,
+        ['encrypt','decrypt']
+      );
+    }
+    async function decryptSecret(encryptedB64, saltB64, ivB64, password) {
+      try {
+        const key = await deriveKey(password, saltB64);
+        const iv = new Uint8Array(b64ToArrayBuffer(ivB64));
+        const cipherBuf = b64ToArrayBuffer(encryptedB64);
+        const plainBuf = await crypto.subtle.decrypt({name: 'AES-GCM', iv: iv}, key, cipherBuf);
+        const dec = new TextDecoder();
+        return dec.decode(plainBuf);
+      } catch (e) {
+        throw new Error('No se pudo descifrar la clave secreta con la contraseña proporcionada.');
+      }
     }
     function loadUsers() {
       try { return JSON.parse(localStorage.getItem('users') || '[]'); } catch (e) { return []; }
@@ -359,15 +475,36 @@
       const imageFile = fileInput.files[0];
 
       const users = loadUsers();
-      if (users.length > 0) {
-        if (!passwordInput) {
-          alert('Contraseña requerida para iniciar sesión.');
-          return;
-        }
-        const hashed = await hashPassword(passwordInput);
-        const found = users.find(u => (u.username === usernameOrEmail || u.email === usernameOrEmail) && u.passwordHash === hashed);
-        if (!found) {
-          alert('Credenciales inválidas. Verifica usuario/contraseña.');
+      // Validar siempre credenciales contra usuarios registrados
+      if (!passwordInput) {
+        alert('Contraseña requerida para iniciar sesión.');
+        return;
+      }
+      const hashed = await hashPassword(passwordInput);
+      const found = users.find(u => (u.username === usernameOrEmail || u.email === usernameOrEmail) && u.passwordHash === hashed);
+      if (!found) {
+        alert('Usuario no encontrado o contraseña incorrecta. Por favor, regístrate primero. Serás redirigido al formulario de registro.');
+        window.location.href = 'Register.html';
+        return;
+      }
+
+      // Si el usuario tiene clave secreta cifrada, intentar descifrar con la contraseña
+      if (found.encryptedSecret && found.encSalt && found.encIv) {
+        try {
+          const secret = await decryptSecret(found.encryptedSecret, found.encSalt, found.encIv, passwordInput);
+          ultimaClaveSecreta = secret;
+          ultimaClavePublica = found.stellarPublic || null;
+          modoManual = true;
+          connectedWallet = ultimaClavePublica;
+          publicKey = ultimaClavePublica;
+          // Actualizar UI
+          try {
+            walletAddress.textContent = `Cuenta manual: ${ultimaClavePublica.substring(0,10)}...${ultimaClavePublica.substring(ultimaClavePublica.length-10)}`;
+            walletStatus.classList.remove('hidden');
+            walletStatus.classList.add('bg-yellow-100', 'text-yellow-800');
+          } catch(e){}
+        } catch (decErr) {
+          alert(decErr.message);
           return;
         }
       }
@@ -378,9 +515,8 @@
         if (!ok) return;
       }
 
-      // Guarda las claves en localStorage si existen
-      if (ultimaClaveSecreta) localStorage.setItem('stellarSecret', ultimaClaveSecreta);
-      if (ultimaClavePublica) localStorage.setItem('stellarPublic', ultimaClavePublica);
+  // Guarda solo la clave pública en localStorage; la clave secreta queda cifrada por el usuario y no se almacena en claro
+  if (ultimaClavePublica) localStorage.setItem('stellarPublic', ultimaClavePublica);
 
       showResult(`✓ Autenticación exitosa para ${usernameOrEmail}\nCuenta: ${connectedWallet || ultimaClavePublica || 'N/A'}`, 'success');
       setTimeout(() => { window.location.href = "inicio.html"; }, 1000);
