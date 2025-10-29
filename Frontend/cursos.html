@@ -545,137 +545,60 @@
 
         function createParticles() {
             const container = document.querySelector('.bg-particles');
-            for (let i = 0; i < 50; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.top = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 6 + 's';
-                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
-                container.appendChild(particle);
+            for (let i = 0; i < 30; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.position = 'absolute';
+                p.style.left = (Math.random() * 100) + '%';
+                p.style.top = (Math.random() * 100) + '%';
+                const size = (2 + Math.random() * 6) + 'px';
+                p.style.width = size;
+                p.style.height = size;
+                p.style.background = 'rgba(255,255,255,0.15)';
+                p.style.borderRadius = '50%';
+                container.appendChild(p);
             }
         }
 
-        function createStarIcons(rating) {
-            const starsCount = 5;
-            const starElements = [];
-            const starPath = "M10 15l-5.09 3.42 1.95-5.85L2 9.59l5.92-.05 2.16-6.1 2.15 6.1 5.92.05-4.86 3.98 1.94 5.85z";
-
-            for (let i = 1; i <= starsCount; i++) {
-                const star = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-                star.setAttribute("viewBox", "0 0 20 20");
-                star.classList.add('star');
-
-                if (i <= Math.floor(rating)) {
-                    star.classList.add('filled');
-                } else if (i === Math.ceil(rating) && rating % 1 !== 0) {
-                    const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
-                    const linearGradient = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
-                    const gradId = `half-gradient-${rating.toString().replace('.', '-')}-${i}`;
-                    linearGradient.setAttribute("id", gradId);
-                    linearGradient.setAttribute("x1", "0%");
-                    linearGradient.setAttribute("y1", "0%");
-                    linearGradient.setAttribute("x2", "100%");
-                    linearGradient.setAttribute("y2", "0%");
-
-                    const stop1 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
-                    stop1.setAttribute("offset", "50%");
-                    stop1.setAttribute("stop-color", "var(--star-color)");
-                    stop1.setAttribute("stop-opacity", "1");
-                    linearGradient.appendChild(stop1);
-
-                    const stop2 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
-                    stop2.setAttribute("offset", "50%");
-                    stop2.setAttribute("stop-color", "var(--star-bg)");
-                    stop2.setAttribute("offset", "100%");
-                    stop2.setAttribute("stop-opacity", "1");
-                    linearGradient.appendChild(stop2);
-
-                    defs.appendChild(linearGradient);
-                    star.appendChild(defs);
-
-                    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                    path.setAttribute("fill", `url(#${gradId})`);
-                    path.setAttribute("d", starPath);
-                    star.appendChild(path);
-                    star.classList.add('filled');
-                }
-
-                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                path.setAttribute("fill", "currentColor");
-                path.setAttribute("d", starPath);
-                star.appendChild(path);
-
-                starElements.push(star);
-            }
-            return starElements;
-        }
-
-        function renderCourses(filteredCourses) {
-            const container = document.getElementById("courses-container");
+        function renderCourses(coursesList) {
+            const container = document.getElementById('courses-container');
             container.innerHTML = '';
 
-            if (filteredCourses.length === 0) {
-                const noResults = document.createElement("div");
-                noResults.className = "no-results";
-                noResults.innerHTML = `
-                    <div class="no-results-icon">🔍</div>
-                    <h3>No se encontraron cursos</h3>
-                    <p>Intenta con otros términos de búsqueda</p>
-                `;
-                container.appendChild(noResults);
-                return;
-            }
+            coursesList.forEach(course => {
+                const card = document.createElement('div');
+                card.className = 'course-card';
 
-            filteredCourses.forEach((course, index) => {
-                const card = document.createElement("article");
-                card.className = "course-card";
-                card.style.animationDelay = `${index * 0.1}s`;
-
-                const img = document.createElement("img");
+                const img = document.createElement('img');
                 img.src = course.image;
-                img.alt = `Imagen del curso: ${course.title}`;
-                img.className = "course-image";
-                img.loading = "lazy";
+                img.className = 'course-image';
                 card.appendChild(img);
 
-                const content = document.createElement("div");
-                content.className = "course-content";
+                const content = document.createElement('div');
+                content.className = 'course-content';
 
-                const ratingDiv = document.createElement("div");
-                ratingDiv.className = "course-rating";
-
-                const starsDiv = document.createElement("div");
-                starsDiv.className = "stars";
-
-                const stars = createStarIcons(course.rating);
-                stars.forEach(star => starsDiv.appendChild(star));
-                ratingDiv.appendChild(starsDiv);
-
-                const ratingText = document.createElement("span");
-                ratingText.className = "rating-text";
-                ratingText.textContent = `${course.rating}/5.0`;
-                ratingDiv.appendChild(ratingText);
-
-                content.appendChild(ratingDiv);
-
-                const title = document.createElement("h2");
-                title.className = "course-title";
+                const title = document.createElement('div');
+                title.className = 'course-title';
                 title.textContent = course.title;
                 content.appendChild(title);
 
-                const desc = document.createElement("p");
-                desc.className = "course-description";
+                const desc = document.createElement('div');
+                desc.className = 'course-description';
                 desc.textContent = course.description;
                 content.appendChild(desc);
 
-                const btn = document.createElement("button");
-                btn.className = "course-button";
-                btn.innerHTML = `✨ Adquirir Curso<br><span style="font-size:0.9em;">${course.price} XLM</span>`;
-                btn.addEventListener("click", async () => {
+                const rating = document.createElement('div');
+                rating.className = 'course-rating';
+                rating.innerHTML = `<div class="stars">${'<svg class="star" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.788 1.402 8.168L12 18.896 4.664 23.166l1.402-8.168L0.132 9.21l8.2-1.192z"/></svg>'.repeat(Math.round(course.rating))}</div><div class="rating-text">${course.rating}</div>`;
+                content.appendChild(rating);
+
+                const btn = document.createElement('button');
+                btn.className = 'course-button';
+                btn.textContent = `Comprar - ${course.price} XLM`;
+
+                btn.addEventListener('click', async () => {
                     const originalHTML = btn.innerHTML;
-                    btn.innerHTML = `<div class="loading"></div> Procesando...`;
                     btn.disabled = true;
+                    const priceAmount = parseFloat(course.price);
 
                     const destino = "GB3S2S4FGCTDTVGQ4UEB4SVVILOVATVEUIQ3WDLL224SUCFOWTBPYCQF";
 
@@ -692,7 +615,6 @@
                         let networkPassphrase = StellarSdk.Networks.TESTNET;
                         if (window.freighterApi) {
                             try {
-                                // Algunos proveedores de Freighter exponen getNetwork(); si existe, úsalo.
                                 if (typeof window.freighterApi.getNetwork === 'function') {
                                     const net = await window.freighterApi.getNetwork();
                                     console.log('Freighter network:', net);
@@ -704,7 +626,6 @@
                                         networkPassphrase = StellarSdk.Networks.PUBLIC;
                                     }
                                 } else {
-                                    // getNetwork no disponible: no forzamos Testnet, pero usamos Testnet por compatibilidad.
                                     console.warn('Freighter no proporciona getNetwork(), se usará Testnet por defecto (sin friendbot).');
                                 }
                             } catch (e) {
@@ -717,7 +638,6 @@
                         // Preferir Freighter para firmar transacciones (no exponer la clave secreta)
                         if (window.freighterApi) {
                             console.log('✓ Freighter detectado — verificando permisos y conexión (isAllowed/setAllowed)');
-                            // Usar el mismo patrón que en app.js para solicitar permisos y obtener la clave pública
                             try {
                                 const isAllowed = await window.freighterApi.isAllowed();
                                 if (!isAllowed) {
@@ -725,7 +645,6 @@
                                 }
                             } catch (permErr) {
                                 console.warn('Error verificando permisos con Freighter:', permErr);
-                                // Intentar conectar de forma segura
                                 try {
                                     if (typeof window.freighterApi.connect === 'function') {
                                         await window.freighterApi.connect();
@@ -777,7 +696,6 @@
                             const xlmBalObj = balances.find(b => b.asset_type === 'native');
                             const xlmBalance = xlmBalObj ? parseFloat(xlmBalObj.balance) : 0;
                             const priceAmount = parseFloat(course.price);
-                            // Reservar ~1 XLM mínimo + un pequeño buffer para fees
                             const minReserve = 1.0;
                             const needed = priceAmount + minReserve + 0.0001;
                             if (xlmBalance < needed) {
@@ -790,7 +708,6 @@
                             // Construir la operación adecuada
                             let op;
                             if (!destinoExiste) {
-                                // Si el destino no existe, usar createAccount. Asegurarse de enviar al menos 1 XLM si price < 1.
                                 const startBal = priceAmount >= 1 ? priceAmount.toString() : '1';
                                 op = StellarSdk.Operation.createAccount({ destination: destino, startingBalance: startBal });
                                 console.log('Usando createAccount como operación porque la cuenta destino no existe. startingBalance=', startBal);
@@ -810,7 +727,6 @@
 
                             // Firmar con Freighter (se pasa la passphrase detectada si Freighter la requiere)
                             const txXdr = transaction.toXDR();
-                            // Incluir accountToSign para mayor compatibilidad con la API de Freighter
                             const signedXdr = await window.freighterApi.signTransaction(txXdr, { network: networkPassphrase, accountToSign: publicKey });
                             const signedTx = StellarSdk.TransactionBuilder.fromXDR(signedXdr, networkPassphrase);
 
@@ -825,245 +741,68 @@
                             btn.style.background = 'var(--soft-gradient)';
                             btn.style.color = 'var(--text-primary)';
                         } else {
-                            // Si no hay Freighter, ofrecer fallback seguro: descifrar la clave privada localmente
-                            const useLocal = confirm('No se detectó Freighter. ¿Deseas usar tu clave privada local cifrada para firmar la transacción? Se solicitará tu usuario y contraseña.');
-                            if (!useLocal) {
-                                alert('Operación cancelada. Conecta Freighter o inicia sesión en la app para procesar pagos.');
-                                btn.innerHTML = originalHTML;
-                                btn.disabled = false;
-                                return;
-                            }
-
-                            // Primero: si hay una clave secreta en localStorage (guardada por Login), úsala sin pedir contraseña
+                            // No Freighter: si no existe clave en localStorage, cancelar sin pedir credenciales
                             const storedSecret = localStorage.getItem('stellarSecret');
                             if (storedSecret) {
+                                // si existe, intentar usarla: construir keypair y firmar localmente
                                 try {
                                     const keypair = StellarSdk.Keypair.fromSecret(storedSecret);
-                                    const localPublic = keypair.publicKey();
-                                    console.log('Usando clave secreta desde localStorage para firmar (usuario no requerido).');
-                                    let sourceAccountLocal;
-                                    try {
-                                        sourceAccountLocal = await server.loadAccount(localPublic);
-                                    } catch (err) {
-                                        alert('La cuenta local guardada no existe o no tiene fondos en la red seleccionada.');
-                                        btn.innerHTML = originalHTML;
-                                        btn.disabled = false;
-                                        return;
-                                    }
+                                    const publicKey = keypair.publicKey();
+                                    const sourceAccount = await server.loadAccount(publicKey);
+                                    const baseFee = await server.fetchBaseFee();
 
-                                    const baseFeeLocal = await server.fetchBaseFee();
-                                    // Comprobar si destino existe; si no, usar createAccount
-                                    let destinoExisteLocal = true;
-                                    try { await server.loadAccount(destino); } catch(e) { destinoExisteLocal = false; }
-                                    let opLocal;
-                                    if (!destinoExisteLocal) {
-                                        const startBal = parseFloat(course.price) >= 1 ? course.price.toString() : '1';
-                                        opLocal = StellarSdk.Operation.createAccount({ destination: destino, startingBalance: startBal });
+                                    let destinoExiste = true;
+                                    try { await server.loadAccount(destino); } catch (e) { destinoExiste = false; }
+
+                                    let op;
+                                    if (!destinoExiste) {
+                                        const startBal = priceAmount >= 1 ? priceAmount.toString() : '1';
+                                        op = StellarSdk.Operation.createAccount({ destination: destino, startingBalance: startBal });
                                     } else {
-                                        opLocal = StellarSdk.Operation.payment({ destination: destino, asset: StellarSdk.Asset.native(), amount: course.price.toString() });
+                                        op = StellarSdk.Operation.payment({ destination: destino, asset: StellarSdk.Asset.native(), amount: course.price.toString() });
                                     }
 
-                                    const txLocal = new StellarSdk.TransactionBuilder(sourceAccountLocal, {
-                                        fee: baseFeeLocal.toString(),
-                                        networkPassphrase: networkPassphrase
-                                    })
-                                    .addOperation(opLocal)
-                                    .setTimeout(180)
-                                    .build();
+                                    const tx = new StellarSdk.TransactionBuilder(sourceAccount, { fee: baseFee.toString(), networkPassphrase: StellarSdk.Networks.TESTNET })
+                                        .addOperation(op)
+                                        .setTimeout(180)
+                                        .build();
 
-                                    txLocal.sign(keypair);
-                                    try {
-                                        console.log('TX XDR (base64):', txLocal.toXDR());
-                                    } catch(e){}
-                                    const res = await server.submitTransaction(txLocal);
-                                    console.log('✅ TRANSACCIÓN EXITOSA (firmada desde localStorage)');
-                                    alert(`✅ ¡Felicidades! Has adquirido: ${course.title}\n\n💰 Se descontaron ${course.price} XLM de tu cuenta.\n\n🔗 Hash: ${res.hash.substring(0,20)}...`);
+                                    tx.sign(keypair);
+                                    const result = await server.submitTransaction(tx);
+                                    alert(`✅ ¡Felicidades! Has adquirido: ${course.title}\n\n💰 Se descontaron ${course.price} XLM de tu cuenta.\n\n🔗 Hash: ${result.hash.substring(0, 20)}...`);
                                     btn.innerHTML = `✅ Curso Adquirido`;
                                     btn.style.background = 'var(--soft-gradient)';
                                     btn.style.color = 'var(--text-primary)';
                                     return;
-                                } catch (err) {
-                                    console.error('Error usando secret desde localStorage:', err);
-                                    // Caerá al flujo de prompt/descifrado a continuación
-                                }
-                            }
-
-                            // Funciones de utilidad para descifrar (copiadas de Login/Register)
-                            function buf2hex(buffer) {
-                                return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
-                            }
-                            async function hashPassword(password) {
-                                const encoder = new TextEncoder();
-                                const data = encoder.encode(password);
-                                const hash = await crypto.subtle.digest('SHA-256', data);
-                                return buf2hex(hash);
-                            }
-                            function b64ToArrayBuffer(b64) {
-                                const binary = atob(b64);
-                                const len = binary.length;
-                                const bytes = new Uint8Array(len);
-                                for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
-                                return bytes.buffer;
-                            }
-                            async function deriveKey(password, saltB64, iterations = 100000) {
-                                const saltBuf = b64ToArrayBuffer(saltB64);
-                                const enc = new TextEncoder();
-                                const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), {name: 'PBKDF2'}, false, ['deriveKey']);
-                                return crypto.subtle.deriveKey(
-                                    {name: 'PBKDF2', salt: saltBuf, iterations: iterations, hash: 'SHA-256'},
-                                    keyMaterial,
-                                    {name: 'AES-GCM', length: 256},
-                                    false,
-                                    ['encrypt','decrypt']
-                                );
-                            }
-                            async function decryptSecret(encryptedB64, saltB64, ivB64, password) {
-                                try {
-                                    const key = await deriveKey(password, saltB64);
-                                    const iv = new Uint8Array(b64ToArrayBuffer(ivB64));
-                                    const cipherBuf = b64ToArrayBuffer(encryptedB64);
-                                    const plainBuf = await crypto.subtle.decrypt({name: 'AES-GCM', iv: iv}, key, cipherBuf);
-                                    const dec = new TextDecoder();
-                                    return dec.decode(plainBuf);
-                                } catch (e) {
-                                    throw new Error('No se pudo descifrar la clave secreta con la contraseña proporcionada.');
-                                }
-                            }
-
-                            try {
-                                const usernameOrEmail = prompt('Introduce tu nombre de usuario o correo asociado a la cuenta registrada:');
-                                if (!usernameOrEmail) {
-                                    alert('Nombre de usuario o correo requerido.');
+                                } catch (localErr) {
+                                    console.error('Error usando clave local:', localErr);
+                                    alert('Se detectó una clave local pero ocurrió un error al usarla. Revisa la consola (F12).');
                                     btn.innerHTML = originalHTML;
                                     btn.disabled = false;
                                     return;
                                 }
-                                const password = prompt('Introduce tu contraseña:');
-                                if (!password) {
-                                    alert('Contraseña requerida.');
-                                    btn.innerHTML = originalHTML;
-                                    btn.disabled = false;
-                                    return;
-                                }
-
-                                const users = (function(){ try { return JSON.parse(localStorage.getItem('users')||'[]'); } catch(e){ return []; } })();
-                                const hashed = await hashPassword(password);
-                                const found = users.find(u => (u.username === usernameOrEmail || u.email === usernameOrEmail) && u.passwordHash === hashed);
-                                if (!found) {
-                                    alert('Usuario no encontrado o contraseña incorrecta.');
-                                    btn.innerHTML = originalHTML;
-                                    btn.disabled = false;
-                                    return;
-                                }
-                                if (!found.encryptedSecret || !found.encSalt || !found.encIv) {
-                                    alert('No se encontró una clave privada cifrada para este usuario.');
-                                    btn.innerHTML = originalHTML;
-                                    btn.disabled = false;
-                                    return;
-                                }
-
-                                const secret = await decryptSecret(found.encryptedSecret, found.encSalt, found.encIv, password);
-                                // Cargar cuenta localmente
-                                const keypair = StellarSdk.Keypair.fromSecret(secret);
-                                const localPublic = keypair.publicKey();
-                                let sourceAccountLocal;
-                                try {
-                                    sourceAccountLocal = await server.loadAccount(localPublic);
-                                } catch (err) {
-                                    alert('La cuenta local conectada no existe o no tiene fondos en la red seleccionada. No se creará automáticamente.');
-                                    btn.innerHTML = originalHTML;
-                                    btn.disabled = false;
-                                    return;
-                                }
-
-                                const baseFeeLocal = await server.fetchBaseFee();
-                                const txLocal = new StellarSdk.TransactionBuilder(sourceAccountLocal, {
-                                    fee: baseFeeLocal.toString(),
-                                    networkPassphrase: networkPassphrase
-                                })
-                                .addOperation(StellarSdk.Operation.payment({
-                                    destination: destino,
-                                    asset: StellarSdk.Asset.native(),
-                                    amount: course.price.toString()
-                                }))
-                                .setTimeout(180)
-                                .build();
-
-                                // Firmar localmente con la clave descifrada
-                                txLocal.sign(keypair);
-                                // Log XDR for debugging
-                                try {
-                                    const xdrToSend = txLocal.toXDR();
-                                    console.log('TX XDR (base64):', xdrToSend);
-                                } catch (xdrErr) {
-                                    console.warn('No se pudo extraer XDR del objeto de transacción:', xdrErr);
-                                }
-
-                                let res;
-                                try {
-                                    res = await server.submitTransaction(txLocal);
-                                    console.log('✅ TRANSACCIÓN EXITOSA (firmada localmente)');
-                                    console.log('Hash:', res.hash);
-                                    alert(`✅ ¡Felicidades! Has adquirido: ${course.title}\n\n💰 Se descontaron ${course.price} XLM de tu cuenta.\n\n🔗 Hash: ${res.hash.substring(0,20)}...`);
-                                } catch (submitErr) {
-                                    console.error('Error enviando transacción a Horizon:', submitErr);
-                                    // Intentar extraer información detallada de Horizon
-                                    try {
-                                        const errData = submitErr.response && submitErr.response.data ? submitErr.response.data : null;
-                                        if (errData) {
-                                            console.error('Detalle de error de Horizon:', errData);
-                                            let friendly = 'Error al enviar la transacción.';
-                                            if (errData.extras && errData.extras.result_codes) {
-                                                const codes = errData.extras.result_codes;
-                                                friendly += '\nCódigos: ' + JSON.stringify(codes);
-                                                if (codes.operations && codes.operations[0] === 'op_no_destination') {
-                                                    friendly += '\n\nLa cuenta destino no existe o no está activada en la red seleccionada.';
-                                                } else if (codes.operations && codes.operations[0] === 'op_underfunded') {
-                                                    friendly += '\n\nFondos insuficientes en la cuenta origen.';
-                                                }
-                                            } else if (errData.title) {
-                                                friendly += '\n' + errData.title;
-                                            }
-                                            alert(friendly + '\n\nRevisa la consola (F12) para más detalles.');
-                                        } else {
-                                            alert('Error al enviar la transacción: ' + (submitErr.message || submitErr) + '\n\nRevisa la consola (F12) para más detalles.');
-                                        }
-                                    } catch (inner) {
-                                        console.error('Error procesando el error de submit:', inner);
-                                        alert('Error al enviar la transacción: ' + (submitErr.message || submitErr));
-                                    }
-                                    btn.innerHTML = originalHTML;
-                                    btn.disabled = false;
-                                    return;
-                                }
-                                btn.innerHTML = `✅ Curso Adquirido`;
-                                btn.style.background = 'var(--soft-gradient)';
-                                btn.style.color = 'var(--text-primary)';
-                                return;
-                            } catch (err) {
-                                console.error('Error en fallback local:', err);
-                                alert('Error al intentar firmar localmente: ' + (err.message || err));
-                                btn.innerHTML = originalHTML;
-                                btn.disabled = false;
-                                return;
                             }
+                            alert('No se detectó Freighter y no se encontró una clave local disponible. Conecta Freighter o inicia sesión/crea una cuenta en la app para procesar pagos.');
+                            btn.innerHTML = originalHTML;
+                            btn.disabled = false;
+                            return;
                         }
                     } catch (error) {
                         console.error('❌ ERROR EN LA TRANSACCIÓN');
                         console.error('Error completo:', error);
-                        
+
                         let errorMessage = "Error desconocido al procesar el pago";
-                        
+
                         if (error.message && !error.response) {
                             errorMessage = error.message;
                         } else if (error.response && error.response.data) {
                             const errorData = error.response.data;
                             console.error('Datos del error:', errorData);
-                            
+
                             if (errorData.extras && errorData.extras.result_codes) {
                                 const codes = errorData.extras.result_codes;
                                 console.error('Códigos de error:', codes);
-                                
+
                                 if (codes.transaction === 'tx_failed') {
                                     if (codes.operations && codes.operations[0] === 'op_underfunded') {
                                         errorMessage = `❌ No tienes suficientes fondos.\n\nNecesitas: ${course.price} XLM + fees (~0.00001 XLM)\n\n💡 Obtén fondos de testnet en:\nhttps://laboratory.stellar.org/#account-creator`;
@@ -1091,6 +830,7 @@
                         btn.disabled = false;
                     }
                 });
+
                 content.appendChild(btn);
 
                 card.appendChild(content);
